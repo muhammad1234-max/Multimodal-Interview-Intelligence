@@ -421,21 +421,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Contact
 
-- **GitHub:** [Placeholder](https://github.com/placeholder)
-- **LinkedIn:** [Placeholder](https://linkedin.com/in/placeholder)
-- **Portfolio:** [Placeholder](https://example.com)
-- **Email:** `hello@example.com`
+- **LinkedIn:** [Placeholder](www.linkedin.com/in/muhammad-abbas-6a9374295)
+- **Email:** `[abbasmohammad812@gmail.com]`
 
 ---
 
-## Repository Statistics
 
-> [!NOTE]
-> *Placeholder statistics. Will populate dynamically when deployed.*
-
-| Metric | Count |
-|---|---|
-| ⭐ **Stars** | `N/A` |
-| 🍴 **Forks** | `N/A` |
-| 👥 **Contributors** | `N/A` |
-| 🐛 **Open Issues** | `N/A` |
