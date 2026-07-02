@@ -1,0 +1,16 @@
+torch
+torchvision
+torchaudio
+transformers
+openai-whisper
+librosa
+opencv-python
+numpy
+pandas
+scikit-learn
+av
+pillow
+ffmpeg-python
+fastapi
+uvicorn[standard]
+python-multipart

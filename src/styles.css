@@ -1,0 +1,239 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@theme inline {
+  /* 
+   * NEURALYN DESIGN SYSTEM TOKENS
+   */
+   
+  /* Color Theme */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Neuralyn Specific Colors */
+  --color-hero-subtitle: var(--hero-subtitle);
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-blue-hover: var(--brand-blue-hover);
+  --color-gradient-end: var(--gradient-end);
+
+  /* Semantic Scale */
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+
+  /* Typography */
+  --font-sans: 'Inter', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+
+  /* Border Radius */
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-2xl: var(--radius-2xl);
+  --radius-full: var(--radius-full);
+
+  /* Shadows & Glows */
+  --shadow-liquid: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  --shadow-button-glow: 0 0 20px rgba(255, 255, 255, 0.3);
+
+  /* Spacing */
+  --spacing-nav-y: 1rem;     /* py-4 */
+  --spacing-nav-x: 2rem;     /* px-8 */
+  --spacing-section-y: 6rem; /* py-24 */
+  --spacing-hero-top: 4rem;  /* mt-16 */
+
+  /* Breakpoints */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+
+  /* Container Widths */
+  --container-3xl: 48rem; /* max-w-3xl */
+  --container-5xl: 64rem; /* max-w-5xl */
+
+  /* Z-Index */
+  --z-below: -1;
+  --z-base: 0;
+  --z-above: 10;
+  --z-nav: 50;
+  --z-modal: 100;
+
+  /* Opacity */
+  --opacity-muted: 0.65;
+  --opacity-glass: 0.1;
+  --opacity-glow: 0.2;
+
+  /* Easings & Animation Durations */
+  --ease-fluid: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+:root {
+  /* Foundation (Dark Mode Default) - Brand Tinted Neutrals */
+  --background: oklch(14% 0.015 255);
+  --foreground: oklch(98% 0.005 255);
+  --card: oklch(18% 0.015 255);
+  --card-foreground: oklch(98% 0.005 255);
+  --popover: oklch(18% 0.015 255);
+  --popover-foreground: oklch(98% 0.005 255);
+  
+  /* Primary translates to the solid white CTA */
+  --primary: oklch(98% 0.005 255);
+  --primary-foreground: oklch(14% 0.015 255);
+  
+  /* Secondary & Muted */
+  --secondary: oklch(22% 0.015 255);
+  --secondary-foreground: oklch(98% 0.005 255);
+  --muted: oklch(22% 0.015 255);
+  --muted-foreground: oklch(75% 0.01 255);
+  
+  /* Accent for UI elements */
+  --accent: oklch(25% 0.02 255);
+  --accent-foreground: oklch(98% 0.005 255);
+  
+  /* Utilities */
+  --destructive: oklch(65% 0.18 25);
+  --destructive-foreground: oklch(98% 0.005 255);
+  --border: oklch(25% 0.015 255);
+  --input: oklch(25% 0.015 255);
+  --ring: oklch(98% 0.005 255);
+
+  /* Neuralyn Accents */
+  --hero-subtitle: oklch(90% 0.02 255);
+  --brand-blue: oklch(50% 0.2 255);
+  --brand-blue-hover: oklch(45% 0.2 255);
+  --gradient-end: oklch(85% 0.1 255);
+
+  /* Semantic Scale */
+  --success: oklch(65% 0.15 150);
+  --warning: oklch(75% 0.15 70);
+
+  /* Border Radius Scale */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html, body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-optical-sizing: auto;
+    font-kerning: normal;
+    min-height: 100vh;
+  }
+}
+
+@layer utilities {
+  /* Liquid Glass Pill Component */
+  .liquid-glass {
+    background: rgba(255, 255, 255, 0.01);
+    background-blend-mode: luminosity;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: none;
+    box-shadow: var(--shadow-liquid);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .liquid-glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.4px;
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.15) 20%,
+      rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%,
+      rgba(255,255,255,0.15) 80%, rgba(255,255,255,0.45) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* Decorative Ambient Gradients */
+  .ambient-glow-blue {
+    background-color: rgba(30, 58, 138, 0.2); /* blue-900/20 */
+    filter: blur(120px);
+    mix-blend-mode: screen;
+  }
+  
+  .ambient-glow-indigo {
+    background-color: rgba(49, 46, 129, 0.2); /* indigo-900/20 */
+    filter: blur(120px);
+    mix-blend-mode: screen;
+  }
+
+  /* Typography utilities */
+  .text-gradient-hero {
+    background: linear-gradient(180deg, var(--color-foreground), var(--color-gradient-end));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+
+  /* New Hero Glow Utilities */
+  .glow-border-cyan {
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.2), inset 0 0 10px rgba(0, 255, 255, 0.1);
+  }
+  
+  .glow-border-blue {
+    border: 1px solid rgba(48, 84, 255, 0.4);
+    box-shadow: 0 0 20px rgba(48, 84, 255, 0.3), inset 0 0 15px rgba(48, 84, 255, 0.2);
+  }
+
+  .text-glow-cyan {
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5), 0 0 20px rgba(0, 255, 255, 0.3);
+  }
+
+  .text-glow-white {
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+  }
+  
+  .glow-icon-sphere {
+    background: radial-gradient(circle at center, rgba(48, 84, 255, 0.8) 0%, rgba(48, 84, 255, 0.2) 50%, transparent 70%);
+    box-shadow: 0 0 30px rgba(48, 84, 255, 0.6);
+  }
+  
+  .perspective-path {
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.8) 50%, transparent 100%);
+    box-shadow: 0 0 15px rgba(48, 84, 255, 0.8);
+    transform: perspective(100px) rotateX(60deg);
+  }
+}
