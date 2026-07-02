@@ -64,16 +64,13 @@ Instead of relying on a single modality (like text alone), it implements a **Mul
 
 ## Screenshots
 
-> [!NOTE]
-> *Replace these placeholders with actual images.*
-
 | Landing Page | Analysis Page |
 |:---:|:---:|
-| ![Landing Page Placeholder](public/placeholders/landing.png) <br> *High-converting hero section with dynamic background glows.* | ![Analysis Page Placeholder](public/placeholders/analysis.png) <br> *WebRTC camera capture with animated processing state.* |
+| ![Landing Page](public/screenshots/landing.png) <br> *High-converting hero section with dynamic background glows.* | ![Analysis Page](public/screenshots/analysis.png) <br> *WebRTC camera capture with animated processing state.* |
 
 | Results Dashboard | Architecture Diagram |
 |:---:|:---:|
-| ![Results Placeholder](public/placeholders/results.png) <br> *Data visualization including Radar, Bar charts, and Confidence Rings.* | ![Architecture Placeholder](public/placeholders/architecture.png) <br> *System architecture showcasing pipeline flow.* |
+| ![Results Dashboard](public/screenshots/results.png) <br> *Data visualization including Radar, Bar charts, and Confidence Rings.* | ![Architecture Diagram](public/screenshots/architecture.png) <br> *System architecture showcasing pipeline flow.* |
 
 ### Demo GIF
 ![Demo GIF Placeholder](public/placeholders/demo.gif)
