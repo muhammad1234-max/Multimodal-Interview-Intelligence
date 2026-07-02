@@ -421,8 +421,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Contact
 
-- **LinkedIn:** [Placeholder](www.linkedin.com/in/muhammad-abbas-6a9374295)
-- **Email:** `[abbasmohammad812@gmail.com]`
+- **LinkedIn:** [Muhammad Abbas](https://www.linkedin.com/in/muhammad-abbas-6a9374295)
+- **Email:** `abbasmohammad812@gmail.com`
 
 ---
 
