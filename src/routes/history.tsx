@@ -56,7 +56,7 @@ interface SessionsResponse {
 function ChartTooltip({ active, payload, label, valuePrefix = "", valueSuffix = "" }: any) {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-[#030309]/90 backdrop-blur-2xl border border-white/10 p-3.5 rounded-2xl shadow-2xl">
+      <div className="bg-[#030309]/90 backdrop-blur-md border border-white/10 p-3.5 rounded-2xl shadow-2xl">
         <p className="text-[10px] uppercase tracking-widest text-white/30 font-semibold mb-2">{label}</p>
         <div className="space-y-1">
           {payload.map((pld: any) => (
@@ -309,7 +309,7 @@ function HistoryPage() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: i * 0.08 }}
-              className="bg-card/50 backdrop-blur-2xl border border-white/5 rounded-3xl p-5 relative overflow-hidden group hover:border-white/10 transition-all duration-300"
+              className="bg-card/50 backdrop-blur-md border border-white/5 rounded-3xl p-5 relative overflow-hidden group hover:border-white/10 transition-all duration-300"
             >
               <div className="flex items-center justify-between mb-3">
                 <span className="text-[10px] uppercase tracking-widest text-white/35 font-semibold">{item.label}</span>
@@ -327,7 +327,7 @@ function HistoryPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="bg-card/40 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 space-y-6"
+            className="bg-card/40 backdrop-blur-md border border-white/10 rounded-3xl p-6 space-y-6"
           >
             <div className="flex items-center justify-between border-b border-white/5 pb-4">
               <div className="flex items-center gap-2">
@@ -426,7 +426,7 @@ function HistoryPage() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="bg-card/45 backdrop-blur-2xl border border-white/5 rounded-3xl p-6 flex flex-col min-h-[300px]"
+              className="bg-card/45 backdrop-blur-md border border-white/5 rounded-3xl p-6 flex flex-col min-h-[300px]"
             >
               <div className="flex items-center gap-2 mb-4">
                 <BarChart3 className="w-4 h-4 text-[var(--brand-blue)]" />
@@ -455,7 +455,7 @@ function HistoryPage() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="bg-card/45 backdrop-blur-2xl border border-white/5 rounded-3xl p-6 flex flex-col min-h-[300px]"
+              className="bg-card/45 backdrop-blur-md border border-white/5 rounded-3xl p-6 flex flex-col min-h-[300px]"
             >
               <div className="flex items-center gap-2 mb-4">
                 <Brain className="w-4 h-4 text-[var(--brand-blue)]" />
@@ -481,7 +481,7 @@ function HistoryPage() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.15 }}
-              className="bg-card/45 backdrop-blur-2xl border border-white/5 rounded-3xl p-6 flex flex-col min-h-[300px] lg:col-span-2"
+              className="bg-card/45 backdrop-blur-md border border-white/5 rounded-3xl p-6 flex flex-col min-h-[300px] lg:col-span-2"
             >
               <div className="flex items-center gap-2 mb-4">
                 <Sparkles className="w-4 h-4 text-[var(--brand-blue)]" />
@@ -504,7 +504,7 @@ function HistoryPage() {
             </motion.div>
           </div>
         ) : chartData.length === 1 ? (
-          <div className="bg-card/40 backdrop-blur-2xl border border-white/5 rounded-3xl p-6 text-center text-xs text-white/40">
+          <div className="bg-card/40 backdrop-blur-md border border-white/5 rounded-3xl p-6 text-center text-xs text-white/40">
             Trend visualisations require at least 2 sessions to render progression metrics.
           </div>
         ) : null}
@@ -514,7 +514,7 @@ function HistoryPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className="bg-card/60 backdrop-blur-3xl border border-white/10 rounded-3xl p-6 shadow-2xl space-y-6"
+          className="bg-card/60 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl space-y-6"
         >
           <div className="flex items-center justify-between border-b border-white/5 pb-4">
             <div className="flex items-center gap-2">
@@ -649,7 +649,7 @@ function HistoryPage() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3, delay: Math.min(10, index) * 0.04 }}
-                      className={`group relative bg-card/60 backdrop-blur-2xl border rounded-3xl overflow-hidden cursor-pointer transition-all duration-300 ${
+                      className={`group relative bg-card/60 backdrop-blur-md border rounded-3xl overflow-hidden cursor-pointer transition-all duration-300 ${
                         isSelected ? "border-[var(--brand-blue)]/60 shadow-[0_0_20px_rgba(48,84,255,0.1)]" : "border-white/8 hover:border-white/20"
                       }`}
                       onClick={() => setSelectedSession(session)}
@@ -736,7 +736,7 @@ function HistoryPage() {
           <div className="lg:col-span-1 space-y-4">
             <span className="text-xs font-semibold text-white/40 uppercase tracking-widest px-1">Session Detail & Transcript</span>
 
-            <div className="bg-card/65 backdrop-blur-3xl border border-white/10 rounded-3xl p-6 shadow-2xl relative min-h-[380px] flex flex-col justify-between">
+            <div className="bg-card/65 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl relative min-h-[380px] flex flex-col justify-between">
               {selectedSession ? (
                 <div className="space-y-6 flex-1 flex flex-col justify-between h-full">
                   <div className="space-y-5">

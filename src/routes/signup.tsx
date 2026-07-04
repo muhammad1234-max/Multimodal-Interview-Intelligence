@@ -109,7 +109,7 @@ function SignupPage() {
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-          className="bg-[#050512]/60 backdrop-blur-3xl border border-white/10 rounded-[2rem] p-8 sm:p-10 shadow-2xl shadow-black/80"
+          className="bg-[#050512]/60 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 sm:p-10 shadow-2xl shadow-black/80"
         >
           {/* Header */}
           <div className="mb-10 text-center flex flex-col items-center">

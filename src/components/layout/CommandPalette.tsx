@@ -80,7 +80,7 @@ export const CommandPalette = memo(function CommandPalette({ isOpen, onClose }: 
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96, y: -10 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
-              className="w-[92%] max-w-[640px] bg-card/90 backdrop-blur-3xl border border-white/10 rounded-2xl shadow-[0_0_40px_rgba(48,84,255,0.1)] overflow-hidden pointer-events-auto flex flex-col"
+              className="w-[92%] max-w-[640px] bg-card/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_0_40px_rgba(48,84,255,0.1)] overflow-hidden pointer-events-auto flex flex-col"
             >
               <div className="flex items-center px-4 py-4 border-b border-white/10 relative">
                 <Search className="w-5 h-5 text-[var(--brand-blue)] mr-3" />

@@ -182,7 +182,7 @@ function Landing() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="group relative w-full max-w-[1040px] mt-auto bg-card/60 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 flex shadow-xl shadow-black/40 overflow-hidden"
+            className="group relative w-full max-w-[1040px] mt-auto bg-card/60 backdrop-blur-md border border-white/10 rounded-3xl p-6 flex shadow-xl shadow-black/40 overflow-hidden"
           >
             {/* Interactive Spotlight */}
             <motion.div
@@ -365,8 +365,8 @@ function Landing() {
               className="hidden md:block absolute top-7 left-14 right-14 h-[2px] bg-white/[0.05] z-0 overflow-hidden rounded-full origin-left"
             >
               <motion.div 
-                className="absolute top-0 bottom-0 w-1/2 bg-gradient-to-r from-transparent via-[var(--brand-blue)] to-transparent opacity-80"
-                animate={{ left: ["-100%", "200%"] }}
+                className="absolute top-0 bottom-0 left-0 w-1/2 bg-gradient-to-r from-transparent via-[var(--brand-blue)] to-transparent opacity-80"
+                animate={{ x: ["-100%", "300%"] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "linear", delay: 0.5 }}
               />
             </motion.div>
@@ -380,8 +380,8 @@ function Landing() {
               className="md:hidden absolute top-14 bottom-14 left-7 w-[2px] bg-white/[0.05] z-0 overflow-hidden rounded-full origin-top"
             >
               <motion.div 
-                className="absolute left-0 right-0 h-1/3 bg-gradient-to-b from-transparent via-[var(--brand-blue)] to-transparent opacity-80"
-                animate={{ top: ["-100%", "200%"] }}
+                className="absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-transparent via-[var(--brand-blue)] to-transparent opacity-80"
+                animate={{ y: ["-100%", "300%"] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "linear", delay: 0.5 }}
               />
             </motion.div>

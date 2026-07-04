@@ -43,7 +43,7 @@ export function Header({ onMenuClick, onOpenCommand }: HeaderProps) {
   };
 
   return (
-    <header className="fixed top-6 left-1/2 -translate-x-1/2 w-[95%] max-w-[1400px] h-16 z-40 bg-white/[0.03] backdrop-blur-2xl border border-white/10 rounded-3xl flex items-center justify-between px-6 shadow-2xl">
+    <header className="fixed top-6 left-1/2 -translate-x-1/2 w-[95%] max-w-[1400px] h-16 z-40 bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-3xl flex items-center justify-between px-6 shadow-2xl">
       {/* Left */}
       <div className="flex items-center gap-4 sm:gap-6">
         <button onClick={onMenuClick} className="text-white/70 hover:text-white transition-colors">
@@ -107,7 +107,7 @@ export function Header({ onMenuClick, onOpenCommand }: HeaderProps) {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 8, scale: 0.96 }}
                 transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute right-0 top-full mt-3 w-52 bg-card/80 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl shadow-black/60 overflow-hidden z-50"
+                className="absolute right-0 top-full mt-3 w-52 bg-card/80 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl shadow-black/60 overflow-hidden z-50"
               >
                 {isAuthenticated && user && (
                   <>

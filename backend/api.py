@@ -2,13 +2,15 @@ import os
 import tempfile
 import shutil
 import time
+import asyncio
 from contextlib import asynccontextmanager
 from typing import Dict, Any
 import uuid
 
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
+import json
 
 from utils.logger import get_structured_logger, request_id_var
 
@@ -198,31 +200,19 @@ async def health_database_check():
         return {"status": "Degraded", "error": str(e)}
 
 
-@app.post("/api/analyze")
-async def analyze_interview(
-    video: UploadFile = File(...),
-    question: str = Form(...),
-    _current_user: UserPublic = Depends(get_current_user),
-) -> Dict[str, Any]:
-    if not video.filename.endswith(('.mp4', '.webm')):
-        raise HTTPException(status_code=400, detail="Invalid video format. Must be .mp4 or .webm")
 
-
-    temp_dir = None
+async def process_video_generator(temp_dir: str, temp_video_path: str, filename: str, size: int, content_type: str, question: str, current_user_id: str):
+    import traceback
     try:
-        temp_dir = tempfile.mkdtemp()
-        temp_video_path = os.path.join(temp_dir, video.filename)
-
-
-        with open(temp_video_path, "wb") as buffer:
-            shutil.copyfileobj(video.file, buffer)
-
         developer_payload = {}
-
         transcription, audio_features = None, None
+        
+        yield f"data: {json.dumps({'stage': 'speech'})}\n\n"
+        await asyncio.sleep(0.1)
+        
         try:
             from pipeline.speech import process_audio
-            logger.debug(f"[Speech] Processing audio for {video.filename}")
+            logger.debug(f"[Speech] Processing audio for {filename}")
             t0 = time.time()
             transcription, audio_features = process_audio(temp_video_path, model_size="tiny")
             t1 = time.time()
@@ -246,6 +236,8 @@ async def analyze_interview(
                 "execution_status": "Failed", "confidence_score": None, "reason": str(e)
             }
 
+        yield f"data: {json.dumps({'stage': 'nlp'})}\n\n"
+        await asyncio.sleep(0.1)
         relevance, sentiment = None, None
         if developer_payload["speech"]["execution_status"] == "Success":
             try:
@@ -260,7 +252,7 @@ async def analyze_interview(
                     "inference_time_ms": (t1 - t0) * 1000,
                     "weights_loaded": True,
                     "device": str(get_device()),
-                    "feature_vector_size": 2,  # relevance & sentiment floats
+                    "feature_vector_size": 2,
                     "execution_status": "Success",
                     "confidence_score": None,
                     "reason": None
@@ -279,9 +271,11 @@ async def analyze_interview(
                 "execution_status": "Bypassed", "confidence_score": None, "reason": "Depends on failed Speech model"
             }
 
+        yield f"data: {json.dumps({'stage': 'vision'})}\n\n"
+        await asyncio.sleep(0.1)
         emotion_probs = None
         try:
-            logger.debug(f"[Vision] Analyzing facial expressions for {video.filename}")
+            logger.debug(f"[Vision] Analyzing facial expressions for {filename}")
             t0 = time.time()
             emotion_probs = get_vision_processor().process_video(temp_video_path)
             t1 = time.time()
@@ -305,6 +299,8 @@ async def analyze_interview(
                 "execution_status": "Failed", "confidence_score": None, "reason": str(e)
             }
 
+        yield f"data: {json.dumps({'stage': 'confidence'})}\n\n"
+        await asyncio.sleep(0.1)
         confidence_class, confidence_label, confidence_probability = None, None, None
         if developer_payload["speech"]["execution_status"] == "Success" and developer_payload["vision"]["execution_status"] == "Success":
             try:
@@ -319,7 +315,7 @@ async def analyze_interview(
                     "inference_time_ms": (t1 - t0) * 1000,
                     "weights_loaded": True,
                     "device": str(get_device()),
-                    "feature_vector_size": 25, # 13 MFCCs + 5 Audio + 7 Emotions
+                    "feature_vector_size": 25,
                     "execution_status": "Success",
                     "confidence_score": confidence_probability,
                     "reason": None
@@ -338,6 +334,8 @@ async def analyze_interview(
                 "execution_status": "Bypassed", "confidence_score": None, "reason": "Depends on failed Speech/Vision models"
             }
 
+        yield f"data: {json.dumps({'stage': 'score'})}\n\n"
+        await asyncio.sleep(0.1)
         final_score = None
         if (developer_payload["nlp"]["execution_status"] == "Success" and 
             developer_payload["vision"]["execution_status"] == "Success" and 
@@ -394,13 +392,13 @@ async def analyze_interview(
             "developer_payload": developer_payload,
         }
 
-        # ── Persist session to MongoDB ────────────────────────────────────────
+        yield f"data: {json.dumps({'stage': 'database'})}\n\n"
+        await asyncio.sleep(0.1)
+        
+        # Persist session
         try:
             af = audio_features or {}
-            
-            # Use placeholder feedback if fusion failed
             if final_score is None:
-                logger.debug("[Fusion] Final score was None, returning incomplete feedback.")
                 feedback = FeedbackModel(
                     strengths=["N/A - Analysis incomplete"],
                     weaknesses=["N/A - Analysis incomplete"],
@@ -427,12 +425,12 @@ async def analyze_interview(
 
             session = await session_service.create(
                 SessionCreate(
-                    user_id=_current_user.id,
+                    user_id=current_user_id,
                     question=question,
                     video=VideoMetadata(
-                        filename=video.filename,
-                        size_bytes=video.size,
-                        content_type=video.content_type
+                        filename=filename,
+                        size_bytes=size,
+                        content_type=content_type
                     ),
                     transcription=transcription,
                     relevance=relevance,
@@ -449,24 +447,50 @@ async def analyze_interview(
                     explanations=explanations,
                 )
             )
-            result["session_id"] = session.id
-            print(f"[session] Saved session {session.id} for user {_current_user.id}", flush=True)
+            result["session_id"] = str(session.id)
+            print(f"[session] Saved session {session.id} for user {current_user_id}", flush=True)
         except Exception as session_err:
-            # Non-fatal: analysis result is still returned even if DB write fails
             print(f"[session] WARNING: Failed to save session: {session_err}", flush=True)
             result["session_id"] = None
 
-        return result
+        yield f"data: {json.dumps({'stage': 'Complete', 'result': result})}\n\n"
 
     except Exception as e:
-        import traceback
         error_trace = traceback.format_exc()
-        print(f"CRITICAL ERROR in /api/analyze: {e}")
+        print(f"CRITICAL ERROR in process_video_generator: {e}")
         print(error_trace)
-        raise HTTPException(status_code=500, detail=str(e))
+        yield f"data: {json.dumps({'stage': 'Failed', 'error': str(e)})}\n\n"
     finally:
         if temp_dir:
             shutil.rmtree(temp_dir, ignore_errors=True)
+
+
+@app.post("/api/analyze")
+async def analyze_interview(
+    video: UploadFile = File(...),
+    question: str = Form(...),
+    _current_user: UserPublic = Depends(get_current_user),
+):
+    if not video.filename.endswith(('.mp4', '.webm')):
+        raise HTTPException(status_code=400, detail="Invalid video format. Must be .mp4 or .webm")
+
+    temp_dir = tempfile.mkdtemp()
+    temp_video_path = os.path.join(temp_dir, video.filename)
+    with open(temp_video_path, "wb") as buffer:
+        shutil.copyfileobj(video.file, buffer)
+
+    return StreamingResponse(
+        process_video_generator(
+            temp_dir=temp_dir, 
+            temp_video_path=temp_video_path, 
+            filename=video.filename, 
+            size=video.size, 
+            content_type=video.content_type, 
+            question=question, 
+            current_user_id=_current_user.id
+        ),
+        media_type="text/event-stream"
+    )
 
 
 if __name__ == "__main__":

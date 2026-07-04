@@ -143,7 +143,7 @@ function SectionCard({ children, delay = 0, className = "", hover = false }: { c
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.5, delay }}
-      className={`group relative bg-card/60 backdrop-blur-2xl border border-white/10 rounded-3xl overflow-hidden ${hover ? 'card-hover' : 'transition-all duration-500'} ${className}`}
+      className={`group relative bg-card/60 backdrop-blur-md border border-white/10 rounded-3xl overflow-hidden ${hover ? 'card-hover' : 'transition-all duration-500'} ${className}`}
     >
       <motion.div
         className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[var(--brand-blue)]/15 to-transparent pointer-events-none"
@@ -330,7 +330,7 @@ function ResultsPage() {
           {/* OVERALL PERFORMANCE */}
           <section className="px-8 md:px-28 py-10">
             <div className="max-w-5xl mx-auto">
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className={`group relative bg-card/60 backdrop-blur-2xl border rounded-3xl overflow-hidden transition-all duration-500 ${grade.border} ${grade.glow}`}>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className={`group relative bg-card/60 backdrop-blur-md border rounded-3xl overflow-hidden transition-all duration-500 ${grade.border} ${grade.glow}`}>
                 <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row md:items-center gap-8 md:gap-16">
                   <div className="flex flex-col items-center justify-center shrink-0">
                       <div className="text-[100px] font-bold leading-none text-white tracking-tighter [text-shadow:0_0_30px_rgba(255,255,255,0.2)]">{Math.min(99, Math.floor(score))}<span className="text-4xl text-white/40">/100</span></div>
@@ -742,7 +742,7 @@ function ResultsPage() {
           {/* TRANSCRIPT */}
           <section className="px-8 md:px-28 py-6">
              <div className="max-w-5xl mx-auto">
-                 <button onClick={() => setShowTranscript(!showTranscript)} className="w-full bg-card/60 backdrop-blur-2xl border border-white/10 hover:border-white/20 hover:bg-white/[0.05] rounded-3xl p-8 flex items-center justify-between transition-all card-hover text-left">
+                 <button onClick={() => setShowTranscript(!showTranscript)} className="w-full bg-card/60 backdrop-blur-md border border-white/10 hover:border-white/20 hover:bg-white/[0.05] rounded-3xl p-8 flex items-center justify-between transition-all card-hover text-left">
                      <div className="flex items-center gap-4">
                          <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
                              <MessageSquareText className="w-5 h-5 text-white/80" />
@@ -768,7 +768,7 @@ function ResultsPage() {
           {/* ADVANCED ANALYSIS */}
           <section className="px-8 md:px-28 pt-6 pb-20">
              <div className="max-w-5xl mx-auto">
-                 <button onClick={() => setShowAdvanced(!showAdvanced)} className="w-full mt-2 bg-card/60 backdrop-blur-2xl border border-white/10 hover:border-[var(--brand-blue)]/30 hover:bg-white/[0.05] rounded-3xl p-8 flex items-center justify-between transition-all card-hover text-left group shadow-lg">
+                 <button onClick={() => setShowAdvanced(!showAdvanced)} className="w-full mt-2 bg-card/60 backdrop-blur-md border border-white/10 hover:border-[var(--brand-blue)]/30 hover:bg-white/[0.05] rounded-3xl p-8 flex items-center justify-between transition-all card-hover text-left group shadow-lg">
                      <div className="flex items-center gap-4">
                          <div className="w-10 h-10 rounded-xl bg-[var(--brand-blue)]/10 border border-[var(--brand-blue)]/20 flex items-center justify-center shrink-0 group-hover:bg-[var(--brand-blue)]/20 transition-colors">
                              <Network className="w-5 h-5 text-[var(--brand-blue)]" />

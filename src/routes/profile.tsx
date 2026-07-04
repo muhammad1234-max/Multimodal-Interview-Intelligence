@@ -88,7 +88,7 @@ function ProfilePage() {
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="bg-card/60 backdrop-blur-3xl border border-white/10 rounded-3xl p-8 shadow-2xl space-y-8"
+          className="bg-card/60 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl space-y-8"
         >
           {/* Top Row: User Initials Big Avatar & Name */}
           <div className="flex flex-col sm:flex-row items-center gap-6 pb-8 border-b border-white/5">

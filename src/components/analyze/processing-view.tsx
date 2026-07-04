@@ -1,58 +1,73 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { Mic, Eye, MessageSquareText, Network, Brain, Zap, CheckCircle2, Loader2, Activity } from "lucide-react";
-import { useEffect, useState, useMemo } from "react";
+import { motion, AnimatePresence, animate } from "framer-motion";
+import { Mic, Eye, MessageSquareText, Network, Brain, Zap, CheckCircle2, Loader2, Activity, Cpu } from "lucide-react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { LineChart, Line, ResponsiveContainer, AreaChart, Area } from "recharts";
 import { AmbientMotion } from "../ui/AmbientMotion";
 import { Particles } from "../ui/Particles";
 
 const PIPELINE_STAGES = [
   {
-    id: "speech",
-    icon: Mic,
-    label: "Speech Analysis",
-    sublabel: "Whisper ASR + MFCC feature extraction",
+    id: "initializing",
+    icon: Loader2,
+    label: "Uploading Video",
+    sublabel: "Preparing your interview recording.",
     color: "#3054ff",
-    duration: 6000,
+    duration: 2000,
+    model: null
   },
   {
-    id: "vision",
-    icon: Eye,
-    label: "Vision Analysis",
-    sublabel: "CNN facial emotion detection per frame",
+    id: "speech",
+    icon: Mic,
+    label: "Speech Transcription",
+    sublabel: "Converting your spoken response into text.",
     color: "#3054ff",
-    duration: 7000,
+    duration: 3500,
+    model: "Whisper Tiny"
   },
   {
     id: "nlp",
     icon: MessageSquareText,
-    label: "NLP Engine",
-    sublabel: "DistilBERT semantic relevance & sentiment",
+    label: "Answer Understanding",
+    sublabel: "Evaluating how relevant and complete your response is.",
     color: "#3054ff",
-    duration: 5000,
+    duration: 2000,
+    model: "DistilBERT"
   },
   {
-    id: "fusion",
-    icon: Network,
-    label: "Neural Fusion",
-    sublabel: "Cross-modal ANN vector synthesis",
+    id: "vision",
+    icon: Eye,
+    label: "Body Language",
+    sublabel: "Analyzing facial expressions, eye contact, and engagement.",
     color: "#3054ff",
-    duration: 4000,
+    duration: 3000,
+    model: "Emotion CNN"
   },
   {
     id: "confidence",
     icon: Zap,
-    label: "Confidence Score",
-    sublabel: "3-class ANN confidence classification",
+    label: "Speech Intelligence",
+    sublabel: "Analyzing pace, clarity, energy, and vocal delivery.",
     color: "#3054ff",
-    duration: 3000,
+    duration: 1000,
+    model: "Confidence ANN"
   },
   {
     id: "score",
     icon: Brain,
-    label: "Final Score",
-    sublabel: "Objective 0–100 interview evaluation",
+    label: "Interview Scoring",
+    sublabel: "Combining all AI models into a unified assessment.",
     color: "#3054ff",
-    duration: 3000,
+    duration: 1000,
+    model: "Fusion ANN"
+  },
+  {
+    id: "database",
+    icon: CheckCircle2,
+    label: "Saving Results",
+    sublabel: "Securely storing your interview session.",
+    color: "#3054ff",
+    duration: 1000,
+    model: null
   },
 ];
 
@@ -76,53 +91,78 @@ const STREAM_LOGS = [
 
 type StageStatus = "pending" | "running" | "done";
 
-export function AnalysisProcessingView() {
+function PipelineTimer({ currentStageIndex }: { currentStageIndex: number }) {
+  const [elapsed, setElapsed] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => setElapsed((e) => e + 1), 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const remainingEstimate = useMemo(() => {
+    let remainingMs = 0;
+    for (let i = Math.max(0, currentStageIndex); i < PIPELINE_STAGES.length; i++) {
+      remainingMs += PIPELINE_STAGES[i].duration;
+    }
+    const remainingSec = Math.max(1, Math.round(remainingMs / 1000) - 1);
+    return `${remainingSec}–${remainingSec + 3} seconds`;
+  }, [currentStageIndex]);
+
+  const mins = Math.floor(elapsed / 60).toString().padStart(2, "0");
+  const secs = (elapsed % 60).toString().padStart(2, "0");
+
+  return (
+    <div className="flex items-center gap-6 text-sm font-mono mt-4 mb-2 text-white/50" aria-live="polite">
+      <div className="flex flex-col">
+        <span className="uppercase tracking-widest text-[10px] text-white/30 mb-1">Elapsed Time</span>
+        <span className="text-white/80">{mins}:{secs}</span>
+      </div>
+      <div className="w-px h-8 bg-white/10" />
+      <div className="flex flex-col">
+        <span className="uppercase tracking-widest text-[10px] text-white/30 mb-1">Estimated Remaining</span>
+        <span className="text-white/80">{remainingEstimate}</span>
+      </div>
+    </div>
+  );
+}
+
+export function AnalysisProcessingView({ currentStage }: { currentStage: string }) {
   const [stageStatuses, setStageStatuses] = useState<StageStatus[]>(
     PIPELINE_STAGES.map(() => "pending")
   );
-  const [currentStage, setCurrentStage] = useState(0);
   const [logs, setLogs] = useState<string[]>([]);
+  const [waitTime, setWaitTime] = useState(0);
+  const progressRef = useRef<HTMLSpanElement>(null);
+  const prevProgress = useRef(0);
 
-  // Advance stages progressively (purely visual — real completion comes from API resolve)
+  const currentIndex = PIPELINE_STAGES.findIndex(s => s.id === currentStage);
+  const safeIndex = currentIndex === -1 ? 0 : currentIndex;
+
+  // Sync statuses with the real currentStage prop
   useEffect(() => {
-    const timers: ReturnType<typeof setTimeout>[] = [];
-
-    let elapsed = 0;
-    PIPELINE_STAGES.forEach((stage, i) => {
-      // Mark running
-      const startTimer = setTimeout(() => {
-        setCurrentStage(i);
-        setStageStatuses((prev) => {
-          const next = [...prev];
-          next[i] = "running";
-          return next;
-        });
-      }, elapsed);
-      timers.push(startTimer);
-
-      elapsed += stage.duration;
-
-      // Mark done
-      const doneTimer = setTimeout(() => {
-        setStageStatuses((prev) => {
-          const next = [...prev];
-          next[i] = "done";
-          return next;
-        });
-      }, elapsed - 600); // finish slightly before next starts
-      timers.push(doneTimer);
+    setStageStatuses((prev) => {
+      return PIPELINE_STAGES.map((_, i) => {
+        if (i < currentIndex) return "done";
+        if (i === currentIndex) return "running";
+        return "pending";
+      });
     });
+    setWaitTime(0); // Reset wait time on stage change
+  }, [currentIndex]);
 
-    return () => timers.forEach(clearTimeout);
-  }, []);
+  // Wait time tracker for rotating messages
+  useEffect(() => {
+    const interval = setInterval(() => setWaitTime(w => w + 1), 1000);
+    return () => clearInterval(interval);
+  }, [currentIndex]);
 
   // Stream logs
   useEffect(() => {
-    let currentIndex = 0;
+    let logIdx = 0;
     const interval = setInterval(() => {
-      if (currentIndex < STREAM_LOGS.length) {
-        setLogs((prev) => [...prev, STREAM_LOGS[currentIndex]]);
-        currentIndex++;
+      if (logIdx < STREAM_LOGS.length) {
+        setLogs((prev) => [...prev, STREAM_LOGS[logIdx]]);
+        logIdx++;
       } else {
         clearInterval(interval);
       }
@@ -134,7 +174,31 @@ export function AnalysisProcessingView() {
   const emotionData = useMemo(() => Array.from({ length: 40 }, (_, i) => ({ joy: 50 + Math.sin(i / 3) * 30, neu: 40 + Math.cos(i / 3) * 20 })), []);
 
   const completedCount = stageStatuses.filter((s) => s === "done").length;
-  const overallProgress = Math.round((completedCount / PIPELINE_STAGES.length) * 100);
+  const targetProgress = Math.round((completedCount / PIPELINE_STAGES.length) * 100);
+
+  // Smooth number animation
+  useEffect(() => {
+    const controls = animate(prevProgress.current, targetProgress, {
+      duration: 0.6,
+      ease: "easeOut",
+      onUpdate: (val) => {
+        if (progressRef.current) {
+          progressRef.current.textContent = Math.round(val).toString();
+        }
+      },
+      onComplete: () => {
+        prevProgress.current = targetProgress;
+      }
+    });
+    return controls.stop;
+  }, [targetProgress]);
+
+  let waitMessage = "Speech, vision, and NLP pipelines are running in real-time. Once the core analysis completes, your personalized AI Coaching will be generated.";
+  if (waitTime > 5) {
+    if (waitTime % 12 < 4) waitMessage = "This stage usually takes a little longer...";
+    else if (waitTime % 12 < 8) waitMessage = "Analyzing multiple AI signals...";
+    else waitMessage = "Almost finished...";
+  }
 
   return (
     <motion.div
@@ -159,7 +223,7 @@ export function AnalysisProcessingView() {
         <div className="relative z-20 max-w-5xl mx-auto px-8 md:px-28 pt-36 pb-20">
 
           {/* ── Hero Header ── */}
-          <div className="text-center mb-16">
+          <div className="text-center mb-16 flex flex-col items-center">
             {/* Badge */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
@@ -193,31 +257,38 @@ export function AnalysisProcessingView() {
             >
               Please wait.
             </motion.h1>
+            
+            <PipelineTimer currentStageIndex={safeIndex} />
 
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="mx-auto max-w-md text-[16px] leading-[1.6] text-white/45 mt-5"
-            >
-              Speech, vision, and NLP pipelines are running in parallel. Results will appear in a moment.
-            </motion.p>
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={waitMessage}
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -5 }}
+                transition={{ duration: 0.4 }}
+                className="mx-auto max-w-md text-[16px] leading-[1.6] text-white/45 mt-5"
+                aria-live="polite"
+              >
+                {waitMessage}
+              </motion.p>
+            </AnimatePresence>
 
             {/* Global progress bar */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.5 }}
-              className="mt-8 max-w-sm mx-auto"
+              className="mt-8 max-w-sm mx-auto w-full"
             >
               <div className="flex items-center justify-between text-xs text-white/40 mb-2 font-mono">
                 <span className="uppercase tracking-widest">Pipeline Progress</span>
-                <span>{overallProgress}%</span>
+                <span><span ref={progressRef}>0</span>%</span>
               </div>
               <div className="h-[3px] bg-white/5 rounded-full overflow-hidden">
                 <motion.div
                   className="h-full bg-gradient-to-r from-[#3054ff] to-[#4a6fff] rounded-full shadow-[0_0_10px_rgba(48,84,255,0.4)]"
-                  animate={{ width: `${overallProgress}%` }}
+                  animate={{ width: `${targetProgress}%` }}
                   transition={{ duration: 0.6, ease: "easeOut" }}
                 />
               </div>
@@ -255,7 +326,7 @@ export function AnalysisProcessingView() {
                   </div>
                 </div>
 
-                <div className="p-5 space-y-3">
+                <div className="p-5 space-y-3" aria-live="polite">
                   {PIPELINE_STAGES.map((stage, i) => {
                     const status = stageStatuses[i];
                     return (
@@ -269,7 +340,7 @@ export function AnalysisProcessingView() {
                             ? "bg-[#3054ff]/10 border-[#3054ff]/30 shadow-[0_0_15px_rgba(48,84,255,0.10)]"
                             : status === "done"
                             ? "bg-white/[0.03] border-white/10"
-                            : "bg-white/[0.02] border-white/5"
+                            : "bg-white/[0.02] border-white/5 opacity-50"
                         }`}
                       >
                         {/* Running laser scan effect */}
@@ -333,7 +404,7 @@ export function AnalysisProcessingView() {
                         {/* Status tag */}
                         <div className={`shrink-0 text-xs font-mono font-medium uppercase tracking-widest px-2.5 py-1 rounded-full border transition-all duration-300 ${
                           status === "running"
-                            ? "text-[#3054ff] bg-[#3054ff]/10 border-[#3054ff]/20"
+                            ? "text-[#3054ff] bg-[#3054ff]/10 border-[#3054ff]/20 shadow-[0_0_10px_rgba(48,84,255,0.2)]"
                             : status === "done"
                             ? "text-white/40 bg-white/[0.04] border-white/8"
                             : "text-white/15 bg-transparent border-transparent"
@@ -409,62 +480,100 @@ export function AnalysisProcessingView() {
 
             </div>
 
-            {/* ── RIGHT: System Log ── */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-              className="h-full"
-            >
-              <div className="h-full bg-[#030309]/80 backdrop-blur-xl border border-white/8 rounded-3xl overflow-hidden flex flex-col shadow-2xl shadow-black/60 relative" style={{ minHeight: '480px' }}>
-                {/* Neural scanning border on log panel */}
-                <motion.div
-                  className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#3054ff]/20 to-transparent pointer-events-none"
-                  animate={{ x: ["-100%", "100%"] }}
-                  transition={{ duration: 8, repeat: Infinity, ease: "linear", delay: 0.5 }}
-                />
-
-                {/* Log header */}
-                <div className="flex items-center gap-3 px-5 py-3.5 border-b border-white/5 bg-black/40">
-                  <Activity className="h-3.5 w-3.5 text-[#3054ff] animate-pulse" strokeWidth={1.5} />
-                  <h4 className="text-xs font-mono font-semibold text-white/60 uppercase tracking-widest">System Logs</h4>
-                  {/* Terminal dots */}
-                  <div className="ml-auto flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-white/10" />
-                    <span className="w-2.5 h-2.5 rounded-full bg-white/10" />
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#3054ff]/40" />
+            {/* ── RIGHT: Models and System Log ── */}
+            <div className="space-y-6">
+              
+              {/* Models Panel */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.45 }}
+                className="bg-[#030309]/80 backdrop-blur-xl border border-white/8 rounded-3xl p-5 shadow-2xl shadow-black/60 relative"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <Cpu className="h-3.5 w-3.5 text-[#3054ff]" strokeWidth={1.5} />
+                  <h4 className="text-xs font-mono font-semibold text-white/60 uppercase tracking-widest">Running AI Systems</h4>
+                </div>
+                <div className="flex flex-col gap-2">
+                  {PIPELINE_STAGES.filter(s => s.model).map((stage, i) => {
+                    const isRunning = stageStatuses[PIPELINE_STAGES.indexOf(stage)] === "running";
+                    return (
+                      <div key={stage.id} className="flex items-center gap-2">
+                        <span className={`w-1 h-1 rounded-full ${isRunning ? 'bg-[#3054ff] animate-pulse shadow-[0_0_8px_rgba(48,84,255,0.8)]' : 'bg-white/20'}`} />
+                        <span className={`text-[11px] font-mono transition-colors duration-300 ${isRunning ? 'text-[#3054ff] font-bold' : 'text-white/40'}`}>
+                          {stage.model}
+                        </span>
+                      </div>
+                    );
+                  })}
+                  <div className="mt-2 pt-2 border-t border-white/5 flex items-center gap-2">
+                    <span className="w-1 h-1 rounded-full bg-white/5" />
+                    <span className="text-[11px] font-mono text-white/20">MiniLM Embeddings</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-1 h-1 rounded-full bg-white/5" />
+                    <span className="text-[11px] font-mono text-white/20">Llama 3.1 8B (Groq)</span>
                   </div>
                 </div>
+              </motion.div>
 
-                {/* Log stream */}
-                <div className="flex-1 p-5 font-mono text-xs leading-[1.9] overflow-hidden relative">
-                  {/* Top fade */}
-                  <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-[#030309]/80 to-transparent z-10 pointer-events-none" />
+              {/* System Log */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.5 }}
+                className="h-full"
+              >
+                <div className="h-full bg-[#030309]/80 backdrop-blur-xl border border-white/8 rounded-3xl overflow-hidden flex flex-col shadow-2xl shadow-black/60 relative" style={{ minHeight: '320px' }}>
+                  {/* Neural scanning border on log panel */}
+                  <motion.div
+                    className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#3054ff]/20 to-transparent pointer-events-none"
+                    animate={{ x: ["-100%", "100%"] }}
+                    transition={{ duration: 8, repeat: Infinity, ease: "linear", delay: 0.5 }}
+                  />
 
-                  <div className="flex flex-col justify-end h-full gap-px">
-                    {logs.map((l, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="text-white/35 leading-relaxed"
+                  {/* Log header */}
+                  <div className="flex items-center gap-3 px-5 py-3.5 border-b border-white/5 bg-black/40">
+                    <Activity className="h-3.5 w-3.5 text-[#3054ff] animate-pulse" strokeWidth={1.5} />
+                    <h4 className="text-xs font-mono font-semibold text-white/60 uppercase tracking-widest">System Logs</h4>
+                    {/* Terminal dots */}
+                    <div className="ml-auto flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-white/10" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-white/10" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#3054ff]/40" />
+                    </div>
+                  </div>
+
+                  {/* Log stream */}
+                  <div className="flex-1 p-5 font-mono text-xs leading-[1.9] overflow-hidden relative">
+                    {/* Top fade */}
+                    <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-[#030309]/80 to-transparent z-10 pointer-events-none" />
+
+                    <div className="flex flex-col justify-end h-full gap-px">
+                      {logs.map((l, i) => (
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="text-white/35 leading-relaxed"
+                        >
+                          {l}
+                        </motion.div>
+                      ))}
+                      {/* Blinking cursor */}
+                      <motion.span
+                        animate={{ opacity: [1, 0, 1] }}
+                        transition={{ duration: 1, repeat: Infinity }}
+                        className="text-[#3054ff] text-sm leading-none"
                       >
-                        {l}
-                      </motion.div>
-                    ))}
-                    {/* Blinking cursor */}
-                    <motion.span
-                      animate={{ opacity: [1, 0, 1] }}
-                      transition={{ duration: 1, repeat: Infinity }}
-                      className="text-[#3054ff] text-sm leading-none"
-                    >
-                      ▍
-                    </motion.span>
+                        ▍
+                      </motion.span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            </div>
 
           </div>
         </div>

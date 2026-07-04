@@ -40,6 +40,7 @@ function AnalyzePage() {
   const [progress, setProgress] = useState(0);
   const [question, setQuestion] = useState("Tell me about a time you led a team through a challenging project.");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [pipelineStage, setPipelineStage] = useState<string>("initializing");
   const [inputMode, setInputMode] = useState<InputMode>("upload");
   const [isDragging, setIsDragging] = useState(false);
   const drop = useRef<HTMLDivElement>(null);
@@ -153,6 +154,7 @@ function AnalyzePage() {
     clearAnalysisResults();
     toast.success("Submitting to AI engine…");
     setIsProcessing(true);
+    setPipelineStage("initializing");
 
     const formData = new FormData();
     formData.append("video", file);
@@ -168,15 +170,41 @@ function AnalyzePage() {
         headers,
         body: formData 
       });
+
       if (!response.ok) {
         const text = await response.text();
         let detail = "Unknown server error";
         try { detail = JSON.parse(text).detail || detail; } catch { detail = text.substring(0, 200) || `HTTP ${response.status}`; }
         throw new Error(detail);
       }
-      const data = await response.json();
-      setAnalysisResults(data);
-      navigate({ to: "/results" });
+
+      if (!response.body) throw new Error("No response body");
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let partialData = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        partialData += decoder.decode(value, { stream: true });
+        const chunks = partialData.split("\n\n");
+        partialData = chunks.pop() || "";
+
+        for (const chunk of chunks) {
+          if (chunk.startsWith("data: ")) {
+            const data = JSON.parse(chunk.substring(6));
+            if (data.stage === "Failed") {
+              throw new Error(data.error || "Analysis failed in backend pipeline");
+            } else if (data.stage === "Complete") {
+              setAnalysisResults(data.result);
+              navigate({ to: "/results" });
+            } else {
+              setPipelineStage(data.stage);
+            }
+          }
+        }
+      }
     } catch (error: unknown) {
       console.error("Analysis failed:", error);
       toast.error(`Analysis failed: ${error instanceof Error ? error.message : "Unknown error"}`);
@@ -203,7 +231,7 @@ function AnalyzePage() {
 
         <AnimatePresence mode="wait">
           {isProcessing ? (
-            <AnalysisProcessingView key="processing" />
+            <AnalysisProcessingView key="processing" currentStage={pipelineStage} />
           ) : (
             <motion.div
               key="upload-form"
@@ -276,7 +304,7 @@ function AnalyzePage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
                       onMouseMove={handleMouseMove}
-                      className="group relative bg-card/60 backdrop-blur-2xl border border-white/10 rounded-3xl overflow-hidden shadow-xl shadow-black/40 hover:border-[var(--brand-blue)]/30 hover:shadow-[0_0_30px_rgba(48,84,255,0.08)] transition-all duration-500"
+                      className="group relative bg-card/60 backdrop-blur-md border border-white/10 rounded-3xl overflow-hidden shadow-xl shadow-black/40 hover:border-[var(--brand-blue)]/30 hover:shadow-[0_0_30px_rgba(48,84,255,0.08)] transition-all duration-500"
                     >
                       {/* Interactive Spotlight (from Landing) */}
                       <motion.div
@@ -509,7 +537,7 @@ function AnalyzePage() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                      className="group bg-card/60 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 hover:border-[var(--brand-blue)]/20 hover:shadow-[0_0_20px_rgba(48,84,255,0.08)] transition-all duration-500"
+                      className="group bg-card/60 backdrop-blur-md border border-white/10 rounded-3xl p-6 hover:border-[var(--brand-blue)]/20 hover:shadow-[0_0_20px_rgba(48,84,255,0.08)] transition-all duration-500"
                     >
                       {/* Section header */}
                       <div className="flex items-center gap-3 mb-5">

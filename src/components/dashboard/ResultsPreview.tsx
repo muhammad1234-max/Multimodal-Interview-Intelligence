@@ -36,7 +36,7 @@ export function ResultsPreview() {
 
       <motion.div 
         style={{ y }}
-        className="relative bg-[#050512]/60 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-6 md:p-10 shadow-2xl shadow-[#3054ff]/5 overflow-hidden"
+        className="relative bg-[#050512]/60 backdrop-blur-md border border-white/10 rounded-[2rem] p-6 md:p-10 shadow-2xl shadow-[#3054ff]/5 overflow-hidden"
       >
         {/* Subtle internal glow */}
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#3054ff]/10 blur-[100px] rounded-full pointer-events-none -z-10" />

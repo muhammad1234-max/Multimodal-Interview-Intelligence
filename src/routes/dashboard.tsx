@@ -209,7 +209,7 @@ function DashboardPage() {
               <div className="lg:col-span-2 space-y-6">
                 
                 {/* Recent Interviews */}
-                <div className="bg-card/60 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 space-y-5">
+                <div className="bg-card/60 backdrop-blur-md border border-white/10 rounded-3xl p-6 space-y-5">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4 text-[var(--brand-blue)]" />
@@ -266,7 +266,7 @@ function DashboardPage() {
                 </div>
 
                 {/* Improvement Summary */}
-                <div className="bg-card/60 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 space-y-4">
+                <div className="bg-card/60 backdrop-blur-md border border-white/10 rounded-3xl p-6 space-y-4">
                   <div className="flex items-center gap-2">
                     <TrendingUp className="w-4 h-4 text-orange-400" />
                     <h3 className="text-sm font-semibold uppercase tracking-widest text-white/80">Improvement Summary</h3>
@@ -324,7 +324,7 @@ function DashboardPage() {
                 </div>
 
                 {/* Quick Actions List */}
-                <div className="bg-card/60 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 space-y-4">
+                <div className="bg-card/60 backdrop-blur-md border border-white/10 rounded-3xl p-6 space-y-4">
                   <h3 className="text-sm font-semibold uppercase tracking-widest text-white/80">Quick Actions</h3>
                   
                   <div className="grid grid-cols-1 gap-2.5">

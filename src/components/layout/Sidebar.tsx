@@ -67,7 +67,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           animate={{ x: 0 }}
           exit={{ x: "-100%" }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="fixed top-28 bottom-4 left-4 md:left-6 w-[220px] z-50 flex flex-col pt-6 pb-6 shadow-[inset_1px_1px_1px_rgba(255,255,255,0.05),0_0_40px_rgba(48,84,255,0.05)] bg-[#030308]/60 backdrop-blur-3xl border border-white/5 rounded-3xl overflow-hidden"
+          className="fixed top-28 bottom-4 left-4 md:left-6 w-[220px] z-50 flex flex-col pt-6 pb-6 shadow-[inset_1px_1px_1px_rgba(255,255,255,0.05),0_0_40px_rgba(48,84,255,0.05)] bg-[#030308]/60 backdrop-blur-xl border border-white/5 rounded-3xl overflow-hidden"
         >
           {/* Mobile Close Button */}
           <button onClick={onClose} className="md:hidden absolute top-4 right-4 text-white/50 hover:text-white transition-colors z-50">
