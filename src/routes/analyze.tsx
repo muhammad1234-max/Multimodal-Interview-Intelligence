@@ -18,7 +18,7 @@ import {
   Network,
 } from "lucide-react";
 import { toast } from "sonner";
-import { getAccessToken } from "@/lib/api-client";
+import { getAccessToken, getApiBaseDomain } from "@/lib/api-client";
 import { setAnalysisResults, clearAnalysisResults } from "@/hooks/use-analysis";
 import { Particles } from "../components/ui/Particles";
 import { AmbientMotion } from "../components/ui/AmbientMotion";
@@ -199,7 +199,7 @@ function AnalyzePage() {
       const headers: HeadersInit = {};
       if (token) headers["Authorization"] = `Bearer ${token}`;
 
-      const response = await fetch("http://127.0.0.1:8000/api/analyze", {
+      const response = await fetch(`${getApiBaseDomain()}/api/analyze`, {
         method: "POST",
         headers,
         body: formData,

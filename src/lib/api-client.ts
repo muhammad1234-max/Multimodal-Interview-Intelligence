@@ -9,6 +9,11 @@
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:8000/api";
 
+// Helper to get base domain (stripping /api if it exists)
+export const getApiBaseDomain = (): string => {
+  return API_BASE.replace(/\/api\/?$/, "");
+};
+
 // ── Token storage helpers ─────────────────────────────────────────────────────
 
 export const getAccessToken = (): string | null => localStorage.getItem("access_token");
@@ -38,7 +43,7 @@ async function tryRefresh(): Promise<boolean> {
     if (!refreshToken) return false;
 
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/auth/refresh`, {
+      const res = await fetch(`${API_BASE}/auth/refresh`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ refresh_token: refreshToken }),
@@ -67,7 +72,7 @@ async function tryRefresh(): Promise<boolean> {
 
 async function apiFetch<T>(path: string, options: RequestInit = {}, retry = true): Promise<T> {
   // Build the full URL — support both relative paths and absolute URLs
-  const url = path.startsWith("http") ? path : `http://127.0.0.1:8000${path}`;
+  const url = path.startsWith("http") ? path : `${getApiBaseDomain()}${path}`;
 
   const accessToken = getAccessToken();
   const headers: Record<string, string> = {
