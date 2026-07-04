@@ -25,6 +25,7 @@ COPY requirements.txt .
 # Install Python dependencies
 # We use --no-cache-dir to keep the image size small
 RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir --force-reinstall opencv-python-headless==4.9.0.80 && \
     pip install --no-cache-dir -r requirements.txt
 
 # Copy backend source code
