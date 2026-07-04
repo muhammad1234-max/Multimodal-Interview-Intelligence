@@ -5,7 +5,7 @@ and is stored alongside the rest of the analysis results.
 
 The frontend no longer needs to recompute this; it simply reads what was stored.
 """
-from .models import FeedbackModel
+from .models import FeedbackModel, ExplanationsModel, MetricExplanation
 
 
 def generate_feedback(
@@ -106,11 +106,10 @@ def generate_explanations(
     confidence_label: str | None,
     emotion_probs: dict[str, float] | None,
     speech_rate: float | None = None,
-) -> 'ExplanationsModel':
+) -> ExplanationsModel:
     """
     Generate human-readable explanations for all AI metrics, handling None gracefully.
     """
-    from .models import MetricExplanation, ExplanationsModel
     
     # ── Speech ─────────────────────────────────────────────────────────────
     speech_exp = None
