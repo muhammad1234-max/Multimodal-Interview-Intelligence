@@ -115,7 +115,7 @@ class CoachingService:
             search_queries.append("vocal confidence projection speech rate filler words")
 
         # Check for anxiety
-        anxious_prob = session.emotion_probs.get("anxious", 0.0)
+        anxious_prob = session.emotion_probs.get("anxious", 0.0) if session.emotion_probs else 0.0
         if anxious_prob > 0.35:
             search_queries.append("managing stress interview anxiety composure eye contact breathing body language")
 

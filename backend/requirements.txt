@@ -2,7 +2,7 @@ torch
 transformers
 openai-whisper
 librosa
-opencv-python
+opencv-python-headless
 numpy
 pandas
 scikit-learn

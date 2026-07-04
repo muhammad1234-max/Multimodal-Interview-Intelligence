@@ -136,9 +136,9 @@ def _call_cloud_llm(prompt: str, system_prompt: str) -> Dict[str, Any] | None:
 
 
 def generate_fallback_coaching(metrics: Dict[str, Any]) -> Dict[str, Any]:
-    score = metrics.get('final_score', 0)
-    relevance = metrics.get('relevance', 0)
-    confidence = metrics.get('confidence_label', "Unknown")
+    score = metrics.get('final_score') or 0
+    relevance = metrics.get('relevance') or 0.0
+    confidence = metrics.get('confidence_label') or "Unknown"
     
     summary = "Your interview demonstrated a baseline understanding of the topic, but lacked some structural depth. Continued practice is necessary to meet professional standards."
     outlook_status = "Needs More Practice"
