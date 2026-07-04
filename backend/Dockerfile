@@ -35,4 +35,5 @@ COPY . .
 EXPOSE 7860
 
 # Start server using uvicorn (using api:app based on start_server.py)
+RUN python -c "import cv2; print('CV2 Version:', cv2.__version__); print('CV2 Path:', cv2.__file__); print('Has CascadeClassifier:', hasattr(cv2, 'CascadeClassifier'))"
 CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "7860", "--workers", "1"]
