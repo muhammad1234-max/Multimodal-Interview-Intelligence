@@ -1,8 +1,11 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
+  cloudflare: false,
   tanstackStart: {
-    server: { entry: "server" },
+    server: { 
+      preset: "vercel",
+    },
   },
   // @ts-expect-error - Vite server options are valid but missing from this specific wrapper type
   server: {
