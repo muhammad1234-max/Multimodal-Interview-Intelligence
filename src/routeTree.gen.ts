@@ -10,7 +10,14 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TechRouteImport } from './routes/tech'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ResultsRouteImport } from './routes/results'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as HistoryRouteImport } from './routes/history'
+import { Route as DiagnosticsRouteImport } from './routes/diagnostics'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ArchitectureRouteImport } from './routes/architecture'
 import { Route as AnalyzeRouteImport } from './routes/analyze'
 import { Route as IndexRouteImport } from './routes/index'
@@ -20,9 +27,44 @@ const TechRoute = TechRouteImport.update({
   path: '/tech',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResultsRoute = ResultsRouteImport.update({
   id: '/results',
   path: '/results',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HistoryRoute = HistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiagnosticsRoute = DiagnosticsRouteImport.update({
+  id: '/diagnostics',
+  path: '/diagnostics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ArchitectureRoute = ArchitectureRouteImport.update({
@@ -45,14 +87,28 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analyze': typeof AnalyzeRoute
   '/architecture': typeof ArchitectureRoute
+  '/dashboard': typeof DashboardRoute
+  '/diagnostics': typeof DiagnosticsRoute
+  '/history': typeof HistoryRoute
+  '/login': typeof LoginRoute
+  '/profile': typeof ProfileRoute
+  '/register': typeof RegisterRoute
   '/results': typeof ResultsRoute
+  '/signup': typeof SignupRoute
   '/tech': typeof TechRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analyze': typeof AnalyzeRoute
   '/architecture': typeof ArchitectureRoute
+  '/dashboard': typeof DashboardRoute
+  '/diagnostics': typeof DiagnosticsRoute
+  '/history': typeof HistoryRoute
+  '/login': typeof LoginRoute
+  '/profile': typeof ProfileRoute
+  '/register': typeof RegisterRoute
   '/results': typeof ResultsRoute
+  '/signup': typeof SignupRoute
   '/tech': typeof TechRoute
 }
 export interface FileRoutesById {
@@ -60,22 +116,73 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/analyze': typeof AnalyzeRoute
   '/architecture': typeof ArchitectureRoute
+  '/dashboard': typeof DashboardRoute
+  '/diagnostics': typeof DiagnosticsRoute
+  '/history': typeof HistoryRoute
+  '/login': typeof LoginRoute
+  '/profile': typeof ProfileRoute
+  '/register': typeof RegisterRoute
   '/results': typeof ResultsRoute
+  '/signup': typeof SignupRoute
   '/tech': typeof TechRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/analyze' | '/architecture' | '/results' | '/tech'
+  fullPaths:
+    | '/'
+    | '/analyze'
+    | '/architecture'
+    | '/dashboard'
+    | '/diagnostics'
+    | '/history'
+    | '/login'
+    | '/profile'
+    | '/register'
+    | '/results'
+    | '/signup'
+    | '/tech'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/analyze' | '/architecture' | '/results' | '/tech'
-  id: '__root__' | '/' | '/analyze' | '/architecture' | '/results' | '/tech'
+  to:
+    | '/'
+    | '/analyze'
+    | '/architecture'
+    | '/dashboard'
+    | '/diagnostics'
+    | '/history'
+    | '/login'
+    | '/profile'
+    | '/register'
+    | '/results'
+    | '/signup'
+    | '/tech'
+  id:
+    | '__root__'
+    | '/'
+    | '/analyze'
+    | '/architecture'
+    | '/dashboard'
+    | '/diagnostics'
+    | '/history'
+    | '/login'
+    | '/profile'
+    | '/register'
+    | '/results'
+    | '/signup'
+    | '/tech'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalyzeRoute: typeof AnalyzeRoute
   ArchitectureRoute: typeof ArchitectureRoute
+  DashboardRoute: typeof DashboardRoute
+  DiagnosticsRoute: typeof DiagnosticsRoute
+  HistoryRoute: typeof HistoryRoute
+  LoginRoute: typeof LoginRoute
+  ProfileRoute: typeof ProfileRoute
+  RegisterRoute: typeof RegisterRoute
   ResultsRoute: typeof ResultsRoute
+  SignupRoute: typeof SignupRoute
   TechRoute: typeof TechRoute
 }
 
@@ -88,11 +195,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TechRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/results': {
       id: '/results'
       path: '/results'
       fullPath: '/results'
       preLoaderRoute: typeof ResultsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/history': {
+      id: '/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof HistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/diagnostics': {
+      id: '/diagnostics'
+      path: '/diagnostics'
+      fullPath: '/diagnostics'
+      preLoaderRoute: typeof DiagnosticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/architecture': {
@@ -123,7 +279,14 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalyzeRoute: AnalyzeRoute,
   ArchitectureRoute: ArchitectureRoute,
+  DashboardRoute: DashboardRoute,
+  DiagnosticsRoute: DiagnosticsRoute,
+  HistoryRoute: HistoryRoute,
+  LoginRoute: LoginRoute,
+  ProfileRoute: ProfileRoute,
+  RegisterRoute: RegisterRoute,
   ResultsRoute: ResultsRoute,
+  SignupRoute: SignupRoute,
   TechRoute: TechRoute,
 }
 export const routeTree = rootRouteImport

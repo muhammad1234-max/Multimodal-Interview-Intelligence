@@ -10,6 +10,7 @@ const NAVIGATION_LINKS = [
   { id: "4", title: "System Settings", icon: Settings, category: "Configuration", href: "/" },
   { id: "5", title: "Interview History", icon: History, category: "Navigation", href: "/" },
   { id: "6", title: "Generate PDF Report", icon: FileText, category: "Actions", href: "/results" },
+  { id: "7", title: "Developer Diagnostics", icon: Settings, category: "Hidden", href: "/diagnostics" },
 ];
 
 export const CommandPalette = memo(function CommandPalette({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {

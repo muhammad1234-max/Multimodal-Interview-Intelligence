@@ -6,25 +6,36 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+
+# Diagnostic & Analytics
 training_log.txt
+*.csv
 
 # Dependency directories
 node_modules/
 backend/venv/
 venv/
 env/
+
+# Environment files
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.production
 
 # Build outputs
 dist/
 dist-ssr/
+build/
 .output/
 .vinxi/
 .tanstack/**
 .nitro/
-*.local
 
 # Python artifacts
+__pycache__/
 **/__pycache__/
 *.pyc
 *.pyo
@@ -33,6 +44,10 @@ dist-ssr/
 .coverage
 htmlcov/
 
+# Local model caches
+backend/weights/*.pt
+!backend/weights/.gitkeep
+
 # Media and Large Binaries
 backend/ffmpeg.exe
 *.mp4
@@ -40,47 +55,30 @@ backend/ffmpeg.exe
 *.wav
 *.mov
 
-# Project-specific data and weights
-data/
-backend/data/*.csv
-backend/weights/*.pt
-!backend/weights/.gitkeep
-
-# Wrangler / Cloudflare
-.wrangler/
-.dev.vars
+# Temporary uploads / Generated reports
+backend/temp/
+*.pdf
+generated_reports/
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
 .idea/
 .DS_Store
+Thumbs.db
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-# impeccable-live-ignore-start
+# Wrangler / Cloudflare
+.wrangler/
+.dev.vars
+
+# Impeccable (Dev Tools)
 .impeccable/
-.gemini/
-.impeccable/hook.cache.json
-.impeccable/hook.pending.json
-.impeccable/config.local.json
-.impeccable/live/server.json
-.impeccable/live/sessions/
-.impeccable/live/previews/
-.impeccable/live/annotations/
-.impeccable/live/cache/
-.impeccable/live/manual-edit-apply-transaction.json
-.impeccable/live/manual-edit-events.jsonl
-.impeccable/live/manual-edit-evidence/
-.impeccable/live/pending-manual-edits.json
-.impeccable/live/deferred-svelte-component-accepts.json
-.impeccable-live.json
 .impeccable-live/
-node_modules/.impeccable-live/
-src/lib/impeccable/ImpeccableLiveRoot.svelte
-src/lib/impeccable/__runtime.js
-src/lib/impeccable/[0-9a-f]*/
-# impeccable-live-ignore-end
+.impeccable-live.json
+.gemini/

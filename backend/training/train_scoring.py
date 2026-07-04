@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+import pickle
 import os
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -28,12 +29,25 @@ def main():
     feature_cols = [col for col in df.columns if col != 'score']
     X = df[feature_cols].values
     y = df['score'].values
+
+    # ── CRITICAL FIX: normalise labels to [0, 1] for sigmoid output ──────────
+    # The ANN output layer uses sigmoid, so targets must be in [0, 1].
+    y_normalized = y / 100.0
     
-    X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train, X_val, y_train, y_val = train_test_split(X, y_normalized, test_size=0.2, random_state=42)
     
+    # ── CRITICAL FIX: save the scaler alongside weights ────────────────────────
+    # Without this, inference cannot apply the same StandardScaler transformation
+    # that training used, causing a feature distribution mismatch.
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train)
     X_val_scaled = scaler.transform(X_val)
+
+    scaler_path = os.path.join(os.path.dirname(__file__), "..", "weights", "scoring_scaler.pkl")
+    os.makedirs(os.path.dirname(scaler_path), exist_ok=True)
+    with open(scaler_path, "wb") as f:
+        pickle.dump(scaler, f)
+    print(f"Scaler saved to {scaler_path}")
     
     X_train_tensor = torch.tensor(X_train_scaled, dtype=torch.float32)
     y_train_tensor = torch.tensor(y_train, dtype=torch.float32).unsqueeze(1)

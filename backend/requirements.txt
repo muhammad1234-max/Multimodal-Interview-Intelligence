@@ -1,6 +1,4 @@
 torch
-torchvision
-torchaudio
 transformers
 openai-whisper
 librosa
@@ -8,9 +6,14 @@ opencv-python
 numpy
 pandas
 scikit-learn
-av
 pillow
 ffmpeg-python
 fastapi
 uvicorn[standard]
 python-multipart
+# Auth dependencies
+motor
+passlib[bcrypt]
+python-jose[cryptography]
+python-dotenv
+email-validator

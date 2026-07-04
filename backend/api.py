@@ -1,12 +1,64 @@
 import os
 import tempfile
 import shutil
+import time
+from contextlib import asynccontextmanager
 from typing import Dict, Any
+import uuid
 
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
-app = FastAPI(title="Interview Insight API")
+from utils.logger import get_structured_logger, request_id_var
+
+# Configure structured logging
+logger = get_structured_logger("api")
+
+# Auth module
+from auth.router import router as auth_router
+from auth.dependencies import get_current_user
+from auth.models import UserPublic
+from auth.config import MONGODB_URI
+
+# Sessions module
+from sessions.router import router as sessions_router
+from sessions.service import session_service
+from sessions.feedback import generate_feedback, generate_explanations
+from sessions.models import SessionCreate, AudioFeaturesModel, VideoMetadata, FeedbackModel
+
+# Coaching module
+from coaching.router import router as coaching_router
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Startup: verify MongoDB Atlas connectivity and model configurations."""
+    # 1. Validate Configurations
+    required_weights = [CONFIDENCE_WEIGHTS, SCORING_WEIGHTS, EMOTION_WEIGHTS]
+    missing = [w for w in required_weights if not os.path.exists(w)]
+    if missing:
+        logger.error("Configuration Validation Failed: Missing PyTorch weights", extra={"extra_data": {"missing_files": missing}})
+        raise RuntimeError(f"Startup aborted. Missing model weights: {missing}")
+
+    # 2. Verify MongoDB
+    if MONGODB_URI:
+        try:
+            from motor.motor_asyncio import AsyncIOMotorClient
+            client = AsyncIOMotorClient(MONGODB_URI, serverSelectionTimeoutMS=8000)
+            info = await client.server_info()
+            client.close()
+            logger.info(f"MongoDB Atlas connected - server v{info.get('version')}")
+        except Exception as e:
+            logger.critical(f"MongoDB Atlas connection FAILED: {e}")
+            raise RuntimeError(f"Startup aborted. Database unreachable: {e}")
+    else:
+        logger.warning("MONGODB_URI not set - auth endpoints will not work.")
+        
+    yield  # Application runs here
+
+
+app = FastAPI(title="Interview Insight API", lifespan=lifespan)
 
 
 
@@ -18,6 +70,37 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def request_tracing_middleware(request: Request, call_next):
+    """Injects a unique Request ID for traceability and logs execution time."""
+    req_id = f"req-{uuid.uuid4().hex[:8]}"
+    token = request_id_var.set(req_id)
+    
+    start_time = time.time()
+    logger.info(f"Incoming Request: {request.method} {request.url.path}")
+    
+    try:
+        response = await call_next(request)
+        process_time = (time.time() - start_time) * 1000
+        response.headers["X-Request-ID"] = req_id
+        logger.info(f"Request Completed: {request.method} {request.url.path}", extra={"extra_data": {"status_code": response.status_code, "duration_ms": round(process_time, 2)}})
+        return response
+    except Exception:
+        process_time = (time.time() - start_time) * 1000
+        logger.error(f"Request Failed: {request.method} {request.url.path}", exc_info=True, extra={"extra_data": {"duration_ms": round(process_time, 2)}})
+        return JSONResponse(status_code=500, content={"detail": "Internal Server Error", "request_id": req_id})
+    finally:
+        request_id_var.reset(token)
+
+# Include authentication routes
+app.include_router(auth_router)
+
+# Include session history routes
+app.include_router(sessions_router)
+
+# Include coaching suggestions routes
+app.include_router(coaching_router)
 
 # Model paths
 CONFIDENCE_WEIGHTS = "weights/confidence_ann.pt"
@@ -85,13 +168,41 @@ def get_fusion_scorer():
 
 @app.get("/api/health")
 async def health_check():
-    return {"status": "ok", "device": str(get_device())}
+    return {"status": "ok", "device": str(get_device()), "timestamp": time.time()}
+
+@app.get("/api/health/models")
+async def health_models_check():
+    """Developer Diagnostic Endpoint for tracing loaded PyTorch singletons."""
+    return {
+        "device": str(get_device()),
+        "nlp_processor": {"status": "Warm" if _nlp_processor else "Cold", "weights_loaded": _nlp_processor is not None},
+        "vision_processor": {"status": "Warm" if _vision_processor else "Cold", "weights_loaded": getattr(_vision_processor, "weights_loaded", False) if _vision_processor else False},
+        "confidence_predictor": {"status": "Warm" if _confidence_predictor else "Cold", "weights_loaded": getattr(_confidence_predictor, "weights_loaded", False) if _confidence_predictor else False},
+        "fusion_scorer": {"status": "Warm" if _fusion_scorer else "Cold", "weights_loaded": getattr(_fusion_scorer, "weights_loaded", False) if _fusion_scorer else False},
+    }
+
+@app.get("/api/health/database")
+async def health_database_check():
+    """Developer Diagnostic Endpoint for MongoDB latency."""
+    if not MONGODB_URI:
+        return {"status": "Unavailable", "reason": "MONGODB_URI not set"}
+    try:
+        from motor.motor_asyncio import AsyncIOMotorClient
+        t0 = time.time()
+        client = AsyncIOMotorClient(MONGODB_URI, serverSelectionTimeoutMS=5000)
+        await client.server_info()
+        client.close()
+        latency_ms = (time.time() - t0) * 1000
+        return {"status": "Healthy", "latency_ms": round(latency_ms, 2)}
+    except Exception as e:
+        return {"status": "Degraded", "error": str(e)}
 
 
 @app.post("/api/analyze")
 async def analyze_interview(
     video: UploadFile = File(...),
-    question: str = Form(...)
+    question: str = Form(...),
+    _current_user: UserPublic = Depends(get_current_user),
 ) -> Dict[str, Any]:
     if not video.filename.endswith(('.mp4', '.webm')):
         raise HTTPException(status_code=400, detail="Invalid video format. Must be .mp4 or .webm")
@@ -106,39 +217,246 @@ async def analyze_interview(
         with open(temp_video_path, "wb") as buffer:
             shutil.copyfileobj(video.file, buffer)
 
-        from pipeline.speech import process_audio
-        print(f"Processing audio for {video.filename}...")
-        transcription, audio_features = process_audio(temp_video_path, model_size="tiny")
+        developer_payload = {}
 
-        print(f"Analyzing text for question: '{question}'...")
-        relevance, sentiment = get_nlp_processor().process_text(transcription, question)
+        transcription, audio_features = None, None
+        try:
+            from pipeline.speech import process_audio
+            logger.debug(f"[Speech] Processing audio for {video.filename}")
+            t0 = time.time()
+            transcription, audio_features = process_audio(temp_video_path, model_size="tiny")
+            t1 = time.time()
+            logger.debug(f"[Speech] Extraction complete. Transcription length: {len(transcription) if transcription else 0}")
+            developer_payload["speech"] = {
+                "model_name": "whisper",
+                "version": "tiny",
+                "inference_time_ms": (t1 - t0) * 1000,
+                "weights_loaded": True,
+                "device": str(get_device()),
+                "feature_vector_size": len(audio_features['mfcc_mean']) if audio_features else None,
+                "execution_status": "Success",
+                "confidence_score": None,
+                "reason": None
+            }
+        except Exception as e:
+            logger.debug(f"[Speech] Failed: {e}")
+            developer_payload["speech"] = {
+                "model_name": "whisper", "version": "tiny", "inference_time_ms": 0.0,
+                "weights_loaded": False, "device": str(get_device()), "feature_vector_size": None,
+                "execution_status": "Failed", "confidence_score": None, "reason": str(e)
+            }
 
-        print(f"Analyzing facial expressions...")
-        emotion_probs = get_vision_processor().process_video(temp_video_path)
+        relevance, sentiment = None, None
+        if developer_payload["speech"]["execution_status"] == "Success":
+            try:
+                logger.debug(f"[NLP] Analyzing text for question: '{question}'")
+                t0 = time.time()
+                relevance, sentiment = get_nlp_processor().process_text(transcription, question)
+                t1 = time.time()
+                logger.debug(f"[NLP] Complete. Relevance: {relevance:.2f}, Sentiment: {sentiment:.2f}")
+                developer_payload["nlp"] = {
+                    "model_name": "multi-qa-MiniLM-L6-cos-v1 / distilbert-sst2",
+                    "version": "v1",
+                    "inference_time_ms": (t1 - t0) * 1000,
+                    "weights_loaded": True,
+                    "device": str(get_device()),
+                    "feature_vector_size": 2,  # relevance & sentiment floats
+                    "execution_status": "Success",
+                    "confidence_score": None,
+                    "reason": None
+                }
+            except Exception as e:
+                logger.debug(f"[NLP] Failed: {e}")
+                developer_payload["nlp"] = {
+                    "model_name": "multi-qa-MiniLM-L6-cos-v1", "version": "v1", "inference_time_ms": 0.0,
+                    "weights_loaded": False, "device": str(get_device()), "feature_vector_size": None,
+                    "execution_status": "Failed", "confidence_score": None, "reason": str(e)
+                }
+        else:
+            developer_payload["nlp"] = {
+                "model_name": "multi-qa-MiniLM-L6-cos-v1", "version": "v1", "inference_time_ms": 0.0,
+                "weights_loaded": False, "device": str(get_device()), "feature_vector_size": None,
+                "execution_status": "Bypassed", "confidence_score": None, "reason": "Depends on failed Speech model"
+            }
 
-        print(f"Predicting confidence...")
-        confidence_class, confidence_label = get_confidence_predictor().predict(audio_features, emotion_probs)
+        emotion_probs = None
+        try:
+            logger.debug(f"[Vision] Analyzing facial expressions for {video.filename}")
+            t0 = time.time()
+            emotion_probs = get_vision_processor().process_video(temp_video_path)
+            t1 = time.time()
+            logger.debug(f"[Vision] Complete. Emotion probs keys: {list(emotion_probs.keys()) if emotion_probs else None}")
+            developer_payload["vision"] = {
+                "model_name": "emotion_cnn",
+                "version": "v1.0",
+                "inference_time_ms": (t1 - t0) * 1000,
+                "weights_loaded": True,
+                "device": str(get_device()),
+                "feature_vector_size": len(emotion_probs) if emotion_probs else None,
+                "execution_status": "Success",
+                "confidence_score": max(emotion_probs.values()) if emotion_probs else None,
+                "reason": None
+            }
+        except Exception as e:
+            logger.debug(f"[Vision] Failed: {e}")
+            developer_payload["vision"] = {
+                "model_name": "emotion_cnn", "version": "v1.0", "inference_time_ms": 0.0,
+                "weights_loaded": False, "device": str(get_device()), "feature_vector_size": None,
+                "execution_status": "Failed", "confidence_score": None, "reason": str(e)
+            }
 
-        print(f"Calculating final score...")
-        final_score = get_fusion_scorer().predict(
-            relevance=relevance,
-            sentiment=sentiment,
-            emotion_probs=emotion_probs,
-            confidence_class=confidence_class,
-            mfcc_mean=audio_features['mfcc_mean']
-        )
+        confidence_class, confidence_label, confidence_probability = None, None, None
+        if developer_payload["speech"]["execution_status"] == "Success" and developer_payload["vision"]["execution_status"] == "Success":
+            try:
+                logger.debug("[Confidence] Predicting acoustic confidence")
+                t0 = time.time()
+                confidence_class, confidence_label, confidence_probability = get_confidence_predictor().predict(audio_features, emotion_probs)
+                t1 = time.time()
+                logger.debug(f"[Confidence] Complete. Prob: {confidence_probability:.2f}")
+                developer_payload["confidence"] = {
+                    "model_name": "confidence_ann",
+                    "version": "v1.0",
+                    "inference_time_ms": (t1 - t0) * 1000,
+                    "weights_loaded": True,
+                    "device": str(get_device()),
+                    "feature_vector_size": 25, # 13 MFCCs + 5 Audio + 7 Emotions
+                    "execution_status": "Success",
+                    "confidence_score": confidence_probability,
+                    "reason": None
+                }
+            except Exception as e:
+                logger.debug(f"[Confidence] Failed: {e}")
+                developer_payload["confidence"] = {
+                    "model_name": "confidence_ann", "version": "v1.0", "inference_time_ms": 0.0,
+                    "weights_loaded": False, "device": str(get_device()), "feature_vector_size": None,
+                    "execution_status": "Failed", "confidence_score": None, "reason": str(e)
+                }
+        else:
+            developer_payload["confidence"] = {
+                "model_name": "confidence_ann", "version": "v1.0", "inference_time_ms": 0.0,
+                "weights_loaded": False, "device": str(get_device()), "feature_vector_size": None,
+                "execution_status": "Bypassed", "confidence_score": None, "reason": "Depends on failed Speech/Vision models"
+            }
 
-        return {
+        final_score = None
+        if (developer_payload["nlp"]["execution_status"] == "Success" and 
+            developer_payload["vision"]["execution_status"] == "Success" and 
+            developer_payload["confidence"]["execution_status"] == "Success" and 
+            developer_payload["speech"]["execution_status"] == "Success"):
+            try:
+                logger.debug("[Fusion] Calculating final score")
+                t0 = time.time()
+                final_score = get_fusion_scorer().predict(
+                    relevance=relevance,
+                    sentiment=sentiment,
+                    emotion_probs=emotion_probs,
+                    confidence_class=confidence_class,
+                    mfcc_mean=audio_features['mfcc_mean']
+                )
+                t1 = time.time()
+                logger.debug(f"[Fusion] Complete. Score: {final_score}")
+                developer_payload["fusion"] = {
+                    "model_name": "scoring_ann",
+                    "version": "v1.0",
+                    "inference_time_ms": (t1 - t0) * 1000,
+                    "weights_loaded": True,
+                    "device": str(get_device()),
+                    "feature_vector_size": 20,
+                    "execution_status": "Success",
+                    "confidence_score": final_score,
+                    "reason": None
+                }
+            except Exception as e:
+                logger.debug(f"[Fusion] Failed: {e}")
+                developer_payload["fusion"] = {
+                    "model_name": "scoring_ann", "version": "v1.0", "inference_time_ms": 0.0,
+                    "weights_loaded": False, "device": str(get_device()), "feature_vector_size": None,
+                    "execution_status": "Failed", "confidence_score": None, "reason": str(e)
+                }
+        else:
+            developer_payload["fusion"] = {
+                "model_name": "scoring_ann", "version": "v1.0", "inference_time_ms": 0.0,
+                "weights_loaded": False, "device": str(get_device()), "feature_vector_size": None,
+                "execution_status": "Bypassed", "confidence_score": None, "reason": "Depends on failed sub-models"
+            }
+
+        result = {
             "transcription": transcription,
             "relevance": relevance,
             "sentiment": sentiment,
             "emotion_probs": emotion_probs,
             "confidence_class": confidence_class,
             "confidence_label": confidence_label,
+            "confidence_probability": confidence_probability,
             "final_score": final_score,
             "audio_features": audio_features,
-            "weights_loaded": True
+            "weights_loaded": True,
+            "developer_payload": developer_payload,
         }
+
+        # ── Persist session to MongoDB ────────────────────────────────────────
+        try:
+            af = audio_features or {}
+            
+            # Use placeholder feedback if fusion failed
+            if final_score is None:
+                logger.debug("[Fusion] Final score was None, returning incomplete feedback.")
+                feedback = FeedbackModel(
+                    strengths=["N/A - Analysis incomplete"],
+                    weaknesses=["N/A - Analysis incomplete"],
+                    suggestions=["Please review the model status to fix pipeline errors."]
+                )
+            else:
+                feedback = generate_feedback(
+                    final_score=final_score,
+                    relevance=relevance,
+                    sentiment=sentiment,
+                    confidence_label=confidence_label,
+                    emotion_probs=emotion_probs,
+                    speech_rate=af.get("speech_rate"),
+                )
+
+            explanations = generate_explanations(
+                final_score=final_score,
+                relevance=relevance,
+                sentiment=sentiment,
+                confidence_label=confidence_label,
+                emotion_probs=emotion_probs,
+                speech_rate=af.get("speech_rate"),
+            )
+
+            session = await session_service.create(
+                SessionCreate(
+                    user_id=_current_user.id,
+                    question=question,
+                    video=VideoMetadata(
+                        filename=video.filename,
+                        size_bytes=video.size,
+                        content_type=video.content_type
+                    ),
+                    transcription=transcription,
+                    relevance=relevance,
+                    sentiment=sentiment,
+                    emotion_probs=emotion_probs,
+                    confidence_class=confidence_class,
+                    confidence_label=confidence_label,
+                    confidence_probability=confidence_probability,
+                    final_score=final_score,
+                    audio_features=AudioFeaturesModel(**af) if af else None,
+                    weights_loaded=True,
+                    developer_payload=developer_payload,
+                    feedback=feedback,
+                    explanations=explanations,
+                )
+            )
+            result["session_id"] = session.id
+            print(f"[session] Saved session {session.id} for user {_current_user.id}", flush=True)
+        except Exception as session_err:
+            # Non-fatal: analysis result is still returned even if DB write fails
+            print(f"[session] WARNING: Failed to save session: {session_err}", flush=True)
+            result["session_id"] = None
+
+        return result
 
     except Exception as e:
         import traceback

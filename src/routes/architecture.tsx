@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Video, AudioLines, Eye, MessageSquareText, Network, Sparkles, ChevronDown } from "lucide-react";
 import { AmbientMotion } from "../components/ui/AmbientMotion";
 import { Particles } from "../components/ui/Particles";
+import { AuthGuard } from "@/components/auth/AuthGuard";
 
 export const Route = createFileRoute("/architecture")({
   head: () => ({
@@ -11,7 +12,7 @@ export const Route = createFileRoute("/architecture")({
       { name: "description", content: "End-to-end multimodal AI fusion pipeline architecture." },
     ],
   }),
-  component: ArchPage,
+  component: () => <ArchPage />,
 });
 
 const stages = [

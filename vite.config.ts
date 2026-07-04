@@ -16,4 +16,16 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          recharts: ['recharts'],
+          framer: ['framer-motion'],
+          ui: ['lucide-react', 'sonner'],
+          vendor: ['react', 'react-dom', 'zod', 'date-fns']
+        }
+      }
+    }
+  }
 });

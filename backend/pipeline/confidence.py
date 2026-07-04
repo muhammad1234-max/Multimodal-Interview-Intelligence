@@ -2,6 +2,7 @@
 import torch
 import os
 import sys
+import pickle
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from models.confidence_ann import ConfidenceANN
 from typing import Dict, Tuple
@@ -14,12 +15,18 @@ class ConfidencePredictor:
         self.device = device
         
         self.model = ConfidenceANN().to(self.device)
+        self.scaler = None
+        self.weights_loaded = False
         
         if weights_path and os.path.exists(weights_path):
             self.model.load_state_dict(torch.load(weights_path, map_location=self.device))
             self.weights_loaded = True
-        else:
-            self.weights_loaded = False
+            
+            # Load the scaler so inputs match training distribution
+            scaler_path = os.path.join(os.path.dirname(weights_path), 'confidence_scaler.pkl')
+            if os.path.exists(scaler_path):
+                with open(scaler_path, 'rb') as f:
+                    self.scaler = pickle.load(f)
             
         self.model.eval()
         
@@ -34,15 +41,21 @@ class ConfidencePredictor:
         features.append(emotion_probs['neutral'])
         features.append(emotion_probs['anxious'])
         
+        if self.scaler:
+            import numpy as np
+            features_array = np.array(features).reshape(1, -1)
+            scaled_features = self.scaler.transform(features_array)
+            features = scaled_features[0].tolist()
+            
         return torch.tensor(features, dtype=torch.float32).unsqueeze(0).to(self.device)
         
-    def predict(self, audio_features: Dict, emotion_probs: Dict) -> Tuple[int, str]:
+    def predict(self, audio_features: Dict, emotion_probs: Dict) -> Tuple[int, str, float]:
+        if not self.weights_loaded:
+            raise RuntimeError("Confidence model weights not loaded")
+            
         input_tensor = self.prepare_input(audio_features, emotion_probs)
-        
-        if self.weights_loaded:
-            confidence_class = self.model.predict(input_tensor)
-        else:
-            confidence_class = 1
+        confidence_class, probs = self.model.predict_with_probs(input_tensor)
+        confidence_probability = probs[confidence_class]
             
         confidence_labels = ['Low', 'Medium', 'High']
-        return confidence_class, confidence_labels[confidence_class]
+        return confidence_class, confidence_labels[confidence_class], float(confidence_probability)

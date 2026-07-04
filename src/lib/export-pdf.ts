@@ -8,10 +8,10 @@ function generateFeedbackList(data: ApiResults) {
   const weaknesses: string[] = [];
   const suggestions: string[] = [];
 
-  if (data.relevance >= 0.70) strengths.push("Answer was on-topic and addressed the question well.");
+  if ((data.relevance ?? 0) >= 0.70) strengths.push("Answer was on-topic and addressed the question well.");
   else weaknesses.push("Answer could be more focused on the question asked.");
 
-  if (data.sentiment >= 0.65) strengths.push("Positive and confident tone in your response.");
+  if ((data.sentiment ?? 0) >= 0.65) strengths.push("Positive and confident tone in your response.");
   else { weaknesses.push("Tone came across as hesitant or neutral."); suggestions.push("Practice speaking with more enthusiasm and conviction."); }
 
   if (data.confidence_label === "High") strengths.push("Strong vocal confidence detected across the interview.");

@@ -1,12 +1,21 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Link, useLocation } from "@tanstack/react-router";
-import { LayoutGrid, PlusCircle, BarChart3, X } from "lucide-react";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
+import { LayoutGrid, PlusCircle, BarChart3, X, LogOut, History, User, LogIn, UserPlus } from "lucide-react";
 import { useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
-const NAV_ITEMS = [
+const PUBLIC_NAV_ITEMS = [
+  { label: "Overview", href: "/", icon: LayoutGrid },
+  { label: "Login", href: "/login", icon: LogIn },
+  { label: "Create Account", href: "/signup", icon: UserPlus },
+];
+
+const AUTH_NAV_ITEMS = [
   { label: "Overview", href: "/", icon: LayoutGrid },
   { label: "New Analysis", href: "/analyze", icon: PlusCircle },
   { label: "Results", href: "/results", icon: BarChart3 },
+  { label: "History", href: "/history", icon: History },
+  { label: "Profile", href: "/profile", icon: User },
 ];
 
 interface SidebarProps {
@@ -16,6 +25,14 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated, logout } = useAuth();
+
+  const handleSignOut = () => {
+    onClose();
+    logout();
+    navigate({ to: "/", replace: true });
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -26,6 +43,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
+
+  const navItems = isAuthenticated ? AUTH_NAV_ITEMS : PUBLIC_NAV_ITEMS;
 
   return (
     <AnimatePresence>
@@ -57,7 +76,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
           {/* Navigation Links */}
           <nav className="flex flex-col gap-2 flex-1 px-3 mt-8 md:mt-2">
-            {NAV_ITEMS.map((item) => {
+            {navItems.map((item) => {
               const isActive = location.pathname === item.href;
               return (
                 <Link
@@ -91,6 +110,27 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               );
             })}
           </nav>
+
+          {/* Sign Out Button - Only render if authenticated */}
+          <AnimatePresence>
+            {isAuthenticated && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="px-3 mb-3"
+              >
+                <button
+                  id="sidebar-signout-btn"
+                  onClick={handleSignOut}
+                  className="group flex items-center w-full px-3 py-3 rounded-2xl transition-all duration-300 border border-transparent hover:bg-white/5 hover:border-white/10 gap-4 text-white/50 hover:text-white/80"
+                >
+                  <LogOut className="w-[22px] h-[22px] transition-all duration-300 group-hover:text-red-400" strokeWidth={2} />
+                  <span className="text-[14px] whitespace-nowrap">Sign Out</span>
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Neural Diagnostics Status Module */}
           <div className="mt-auto px-3">

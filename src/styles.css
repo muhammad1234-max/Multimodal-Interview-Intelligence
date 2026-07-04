@@ -1,7 +1,5 @@
 @import "tailwindcss" source(none);
 @source "../src";
-@import "tw-animate-css";
-
 @theme inline {
   /* 
    * NEURALYN DESIGN SYSTEM TOKENS
@@ -150,6 +148,20 @@
     font-optical-sizing: auto;
     font-kerning: normal;
     min-height: 100vh;
+    scroll-behavior: smooth;
+  }
+  
+  ::selection {
+    background-color: var(--color-brand-blue);
+    color: white;
+  }
+  
+  /* Global Accessibility Focus Ring */
+  *:focus-visible {
+    outline: 2px solid var(--color-brand-blue);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(48, 84, 255, 0.2);
+    transition: outline 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
   }
 }
 
@@ -204,8 +216,42 @@
     color: transparent;
   }
 
-  .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
-  .scrollbar-thin::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+  /* Refined Scrollbars */
+  .scrollbar-thin::-webkit-scrollbar { 
+    width: 8px; 
+    height: 8px; 
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb { 
+    background: rgba(255, 255, 255, 0.1); 
+    border-radius: 9999px; 
+    border: 2px solid var(--background);
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover { 
+    background: rgba(255, 255, 255, 0.2); 
+  }
+
+  /* Component Microinteractions */
+  .card-hover {
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .card-hover:hover {
+    transform: translateY(-2px);
+    border-color: rgba(48, 84, 255, 0.2);
+    box-shadow: 0 10px 40px -10px rgba(48, 84, 255, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  }
+  
+  .btn-interaction {
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease-out, background-color 0.2s ease-out;
+  }
+  .btn-interaction:hover {
+    transform: scale(1.02);
+  }
+  .btn-interaction:active {
+    transform: scale(0.98);
+  }
 
   /* New Hero Glow Utilities */
   .glow-border-cyan {

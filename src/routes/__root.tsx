@@ -11,6 +11,7 @@ import { useState, useEffect } from "react";
 import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { CommandPalette } from "@/components/layout/CommandPalette";
+import { AuthProvider } from "@/contexts/AuthContext";
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
@@ -116,32 +117,34 @@ function RootComponent() {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <div className="relative flex min-h-screen w-full bg-black text-foreground overflow-x-hidden">
-        
-        {/* Global Background Layer */}
-        <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-          <img 
-            src="/hero-bg-v4.jpg" 
-            alt="Neural Background" 
-            className="w-full h-full object-cover mix-blend-screen opacity-100 contrast-[1.15] saturate-[1.2] brightness-[1.1]"
-          />
+    <AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <div className="relative flex min-h-screen w-full bg-black text-foreground overflow-x-hidden">
+          
+          {/* Global Background Layer */}
+          <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+            <img 
+              src="/hero-bg-v4.jpg" 
+              alt="Neural Background" 
+              className="w-full h-full object-cover mix-blend-screen opacity-100 contrast-[1.15] saturate-[1.2] brightness-[1.1]"
+            />
+          </div>
+
+          {/* Global Header */}
+          <Header onMenuClick={() => setIsSidebarOpen(p => !p)} onOpenCommand={() => setIsCommandOpen(true)} />
+
+          {/* Global Sidebar (Collapsible) */}
+          <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+
+          {/* Main Content Area */}
+          <main className="relative z-10 flex-1 w-full flex flex-col pt-0">
+            <Outlet />
+          </main>
+
+          <CommandPalette isOpen={isCommandOpen} onClose={() => setIsCommandOpen(false)} />
+          <Toaster richColors theme="dark" position="bottom-left" />
         </div>
-
-        {/* Global Header */}
-        <Header onMenuClick={() => setIsSidebarOpen(p => !p)} onOpenCommand={() => setIsCommandOpen(true)} />
-
-        {/* Global Sidebar (Collapsible) */}
-        <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-
-        {/* Main Content Area */}
-        <main className="relative z-10 flex-1 w-full flex flex-col pt-0">
-          <Outlet />
-        </main>
-
-        <CommandPalette isOpen={isCommandOpen} onClose={() => setIsCommandOpen(false)} />
-        <Toaster richColors theme="dark" position="bottom-left" />
-      </div>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </AuthProvider>
   );
 }

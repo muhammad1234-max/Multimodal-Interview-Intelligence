@@ -3,6 +3,7 @@ import { Server, Brain, Mic, MessageSquareText, Eye, Network, Zap } from "lucide
 import { motion } from "framer-motion";
 import { AmbientMotion } from "../components/ui/AmbientMotion";
 import { Particles } from "../components/ui/Particles";
+import { AuthGuard } from "@/components/auth/AuthGuard";
 
 export const Route = createFileRoute("/tech")({
   head: () => ({
@@ -11,7 +12,7 @@ export const Route = createFileRoute("/tech")({
       { name: "description", content: "FastAPI, PyTorch, Whisper, DistilBERT, CNN, ANN — the full stack." },
     ],
   }),
-  component: TechPage,
+  component: () => <TechPage />,
 });
 
 const engines = [

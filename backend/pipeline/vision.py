@@ -5,7 +5,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 from typing import Dict
-import tempfile
 import os
 
 
@@ -54,6 +53,9 @@ class VisionProcessor:
         return face_tensor
         
     def process_video(self, video_path: str, num_frames: int = 30) -> Dict[str, float]:
+        if not self.weights_loaded:
+            raise RuntimeError("Vision model weights not loaded")
+            
         cap = cv2.VideoCapture(video_path)
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         frame_interval = max(1, total_frames // num_frames)

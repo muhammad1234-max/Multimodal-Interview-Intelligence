@@ -5,6 +5,8 @@ import { Mic, Eye, MessageSquareText, Network, ArrowRight, Brain, Zap, ShieldChe
 import { Particles } from "../components/ui/Particles";
 import { AmbientMotion } from "../components/ui/AmbientMotion";
 import { ResultsPreview } from "../components/dashboard/ResultsPreview";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -31,6 +33,7 @@ const stats = [
 ];
 
 function Landing() {
+  const { isAuthenticated, logout } = useAuth();
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Spotlight mouse tracking
@@ -120,24 +123,57 @@ function Landing() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
-            className="flex flex-col sm:flex-row items-center gap-8 mt-12 mb-8"
+            className="flex flex-col sm:flex-row items-center gap-6 mt-12 mb-8 relative z-30"
           >
-            <Link
-              to="/analyze"
-              className="group flex items-center gap-4 bg-white text-black font-semibold rounded-full pl-7 pr-2 py-2 transition-transform hover:scale-[1.01] active:scale-[0.98] shadow-xl shadow-black/20"
-            >
-              <span className="text-[17px]">Start Using Free</span>
-              <div className="bg-[var(--brand-blue)] rounded-full w-[42px] h-[42px] flex items-center justify-center group-hover:bg-[var(--brand-blue-hover)] transition-colors">
-                <ArrowRight className="w-5 h-5 text-white" />
-              </div>
-            </Link>
-            
-            <Link
-              to="/results"
-              className="group text-white/90 font-medium hover:text-white transition-colors flex items-center gap-2 text-[16px] drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
-            >
-              View Demo <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" />
-            </Link>
+            {!isAuthenticated ? (
+              <>
+                <Link
+                  to="/login"
+                  className="group flex items-center gap-4 bg-white text-black font-semibold rounded-full pl-7 pr-2 py-2 shadow-xl shadow-black/20 btn-interaction"
+                >
+                  <span className="text-[17px]">Login</span>
+                  <div className="bg-[var(--brand-blue)] rounded-full w-[42px] h-[42px] flex items-center justify-center group-hover:bg-[var(--brand-blue-hover)] transition-colors">
+                    <ArrowRight className="w-5 h-5 text-white" />
+                  </div>
+                </Link>
+                
+                <Link
+                  to="/signup"
+                  className="group text-white/90 font-medium hover:text-white transition-colors flex items-center gap-2 text-[16px] drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
+                >
+                  Sign Up <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" />
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/history"
+                  className="group flex items-center gap-4 bg-white text-black font-semibold rounded-full pl-7 pr-2 py-2 shadow-xl shadow-black/20 btn-interaction"
+                >
+                  <span className="text-[17px]">Dashboard</span>
+                  <div className="bg-[var(--brand-blue)] rounded-full w-[42px] h-[42px] flex items-center justify-center group-hover:bg-[var(--brand-blue-hover)] transition-colors">
+                    <ArrowRight className="w-5 h-5 text-white" />
+                  </div>
+                </Link>
+                
+                <Link
+                  to="/profile"
+                  className="group text-white/90 font-medium hover:text-white transition-colors flex items-center gap-2 text-[16px] drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
+                >
+                  Profile <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" />
+                </Link>
+
+                <button
+                  onClick={() => {
+                    logout();
+                    toast.success("Logged out successfully.");
+                  }}
+                  className="px-6 py-3 rounded-full border border-white/10 bg-white/5 text-sm font-semibold text-white/60 hover:text-white hover:border-white/20 transition-all cursor-pointer shadow-lg"
+                >
+                  Logout
+                </button>
+              </>
+            )}
           </motion.div>
           
           {/* Bottom Feature Panel */}

@@ -1,5 +1,4 @@
 import os
-import sys
 import glob
 
 # Fix for Windows: disable HuggingFace tokenizers parallelism and restrict

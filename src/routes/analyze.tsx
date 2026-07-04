@@ -7,10 +7,12 @@ import {
   Eye, MessageSquareText, Network,
 } from "lucide-react";
 import { toast } from "sonner";
+import { getAccessToken } from "@/lib/api-client";
 import { setAnalysisResults, clearAnalysisResults } from "@/hooks/use-analysis";
 import { Particles } from "../components/ui/Particles";
 import { AmbientMotion } from "../components/ui/AmbientMotion";
 import { AnalysisProcessingView } from "@/components/analyze/processing-view";
+import { AuthGuard } from "@/components/auth/AuthGuard";
 
 export const Route = createFileRoute("/analyze")({
   head: () => ({
@@ -19,7 +21,7 @@ export const Route = createFileRoute("/analyze")({
       { name: "description", content: "Upload a video or record live to evaluate your interview performance with multimodal AI." },
     ],
   }),
-  component: AnalyzePage,
+  component: () => <AuthGuard><AnalyzePage /></AuthGuard>,
 });
 
 type RecordState = "idle" | "requesting" | "recording" | "stopped";
@@ -157,7 +159,15 @@ function AnalyzePage() {
     formData.append("question", question);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/analyze", { method: "POST", body: formData });
+      const token = getAccessToken();
+      const headers: HeadersInit = {};
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+
+      const response = await fetch("http://127.0.0.1:8000/api/analyze", { 
+        method: "POST", 
+        headers,
+        body: formData 
+      });
       if (!response.ok) {
         const text = await response.text();
         let detail = "Unknown server error";
@@ -534,7 +544,7 @@ function AnalyzePage() {
                     >
                       <button
                         onClick={analyze}
-                        className="group w-full flex items-center justify-center gap-4 bg-white text-black font-semibold rounded-full pl-7 pr-2 py-2 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-black/20"
+                        className="group w-full flex items-center justify-center gap-4 bg-white text-black font-semibold rounded-full pl-7 pr-2 py-2 btn-interaction shadow-xl shadow-black/20"
                       >
                         <Sparkles className="w-5 h-5" />
                         <span className="text-[17px] flex-1 text-left">Run Analysis</span>

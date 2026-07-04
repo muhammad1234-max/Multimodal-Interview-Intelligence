@@ -35,6 +35,13 @@ def main():
     X_train_scaled = scaler.fit_transform(X_train)
     X_val_scaled = scaler.transform(X_val)
     
+    import pickle
+    scaler_path = os.path.join(os.path.dirname(__file__), "..", "weights", "confidence_scaler.pkl")
+    os.makedirs(os.path.dirname(scaler_path), exist_ok=True)
+    with open(scaler_path, "wb") as f:
+        pickle.dump(scaler, f)
+    print(f"Scaler saved to {scaler_path}")
+    
     X_train_tensor = torch.tensor(X_train_scaled, dtype=torch.float32)
     y_train_tensor = torch.tensor(y_train, dtype=torch.long)
     X_val_tensor = torch.tensor(X_val_scaled, dtype=torch.float32)

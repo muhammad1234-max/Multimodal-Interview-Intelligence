@@ -29,7 +29,7 @@ export function ResultsPreview() {
         <h2 className="mt-6 text-4xl md:text-5xl font-semibold tracking-tighter" style={{ fontFamily: 'var(--font-serif)' }}>
           See the Intelligence in Action.
         </h2>
-        <p className="mt-4 text-white/50 max-w-xl text-sm leading-relaxed">
+        <p className="mt-4 text-white/80 max-w-xl text-sm leading-relaxed">
           The moment your interview concludes, our neural engine synthesizes a comprehensive, objective performance dashboard.
         </p>
       </div>
@@ -50,7 +50,7 @@ export function ResultsPreview() {
             {/* Overall Score Display */}
             <div className="bg-[#0a0a1a]/40 backdrop-blur-md border border-white/5 rounded-2xl p-6 md:p-8 relative overflow-hidden flex flex-col justify-center min-h-[200px] group transition-all duration-300 hover:border-white/10">
               <div className="flex justify-between items-start mb-2">
-                <span className="text-xs font-semibold uppercase tracking-widest text-white/50">Overall Score</span>
+                <span className="text-xs font-semibold uppercase tracking-widest text-white/80">Overall Score</span>
                 <div className="inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-semibold bg-white/10 border-white/20 text-white">
                   <TrendingUp className="h-3.5 w-3.5" /> Excellent
                 </div>
@@ -60,7 +60,7 @@ export function ResultsPreview() {
                 <div className="text-7xl font-semibold tracking-tighter text-white tabular-nums leading-none">
                   92
                 </div>
-                <div className="pb-1 text-xl font-medium text-white/40">/ 100</div>
+                <div className="pb-1 text-xl font-medium text-white/90">/ 100</div>
               </div>
 
               <div className="h-1.5 overflow-hidden rounded-full bg-white/10 mt-auto">
@@ -117,7 +117,7 @@ export function ResultsPreview() {
                     <div key={item.k} className="flex flex-col gap-1.5">
                       <div className="flex justify-between items-baseline">
                         <span className="text-sm font-medium text-white/80">{item.k}</span>
-                        <span className="text-xs font-mono text-white/40">{item.raw}</span>
+                        <span className="text-xs font-mono text-white/90">{item.raw}</span>
                       </div>
                       <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
                         <motion.div
@@ -136,10 +136,10 @@ export function ResultsPreview() {
 
             {/* Transcript Preview */}
             <div className="bg-[#0a0a1a]/40 backdrop-blur-md border border-white/5 rounded-2xl p-6 relative overflow-hidden group transition-all duration-300 hover:border-white/10">
-               <div className="text-xs uppercase tracking-widest text-white/40 font-semibold mb-4 flex items-center gap-2">
+               <div className="text-xs uppercase tracking-widest text-white/90 font-semibold mb-4 flex items-center gap-2">
                  <MessageSquareText className="h-3 w-3" /> Transcript Snippet
                </div>
-               <p className="text-sm leading-relaxed text-white/70 italic relative z-10">
+               <p className="text-sm leading-relaxed text-white/90 italic relative z-10">
                  "I spearheaded the cloud migration initiative, reducing operational costs by 30% while ensuring zero downtime during the transition. My primary focus was on..."
                </p>
                <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[#0a0a1a] to-transparent z-10 pointer-events-none" />
@@ -151,7 +151,7 @@ export function ResultsPreview() {
             
             {/* Confidence Gauge */}
             <div className="bg-[#0a0a1a]/40 backdrop-blur-md border border-white/5 rounded-2xl p-6 flex flex-col items-center justify-center text-center group transition-all duration-300 hover:border-white/10">
-              <span className="text-xs font-semibold uppercase tracking-widest text-white/50 mb-4 block w-full text-left">Vocal Confidence</span>
+              <span className="text-xs font-semibold uppercase tracking-widest text-white/80 mb-4 block w-full text-left">Vocal Confidence</span>
               
               <div className="relative grid place-items-center mb-2 mt-2">
                 <svg width="120" height="120" className="-rotate-90">
@@ -167,7 +167,7 @@ export function ResultsPreview() {
                 </svg>
                 <div className="absolute text-center">
                   <div className="text-xl font-bold text-white">High</div>
-                  <div className="mt-1 text-[10px] uppercase tracking-widest text-white/40 tabular-nums">95%</div>
+                  <div className="mt-1 text-[10px] uppercase tracking-widest text-white/90 tabular-nums">95%</div>
                 </div>
               </div>
             </div>
@@ -180,7 +180,7 @@ export function ResultsPreview() {
                 </div>
                 <h4 className="font-semibold text-white/90 text-sm">Key Strengths</h4>
               </div>
-              <ul className="space-y-3 text-sm text-white/60">
+              <ul className="space-y-3 text-sm text-white/85">
                 <li className="flex gap-2"><span className="text-emerald-500 shrink-0">›</span>Highly relevant to technical topic.</li>
                 <li className="flex gap-2"><span className="text-emerald-500 shrink-0">›</span>Positive and confident delivery.</li>
               </ul>
@@ -191,7 +191,7 @@ export function ResultsPreview() {
                 </div>
                 <h4 className="font-semibold text-white/90 text-sm">Actionable Tip</h4>
               </div>
-              <p className="text-sm text-white/60 leading-relaxed">
+              <p className="text-sm text-white/85 leading-relaxed">
                 Pacing was perfect. Try maintaining slightly more eye contact when explaining complex metrics.
               </p>
             </div>
