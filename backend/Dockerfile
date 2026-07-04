@@ -25,8 +25,10 @@ COPY requirements.txt .
 # Install Python dependencies
 # We use --no-cache-dir to keep the image size small
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir --force-reinstall opencv-python-headless==4.9.0.80 && \
     pip install --no-cache-dir -r requirements.txt
+
+# Verify OpenCV loads correctly (will fail the build early if not)
+RUN python -c "import cv2; print('CV2 Version:', cv2.__version__); print('Has CascadeClassifier:', hasattr(cv2, 'CascadeClassifier'))"
 
 # Copy backend source code
 COPY . .
@@ -35,5 +37,4 @@ COPY . .
 EXPOSE 7860
 
 # Start server using uvicorn (using api:app based on start_server.py)
-RUN python -c "import cv2; print('CV2 Version:', cv2.__version__); print('CV2 Path:', cv2.__file__); print('Has CascadeClassifier:', hasattr(cv2, 'CascadeClassifier'))"
 CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "7860", "--workers", "1"]
