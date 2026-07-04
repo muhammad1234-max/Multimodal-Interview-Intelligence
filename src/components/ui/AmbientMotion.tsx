@@ -11,22 +11,22 @@ export const AmbientMotion = memo(function AmbientMotion() {
         transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
         style={{ willChange: "opacity" }}
       />
-      
+
       {/* Soft Light Movement */}
       <motion.div
         className="absolute w-[80vw] h-[80vh] bg-[var(--brand-blue)]/[0.010] blur-[100px] rounded-full"
-        animate={{ 
+        animate={{
           x: ["-20%", "40%", "-20%"],
-          y: ["-10%", "20%", "-10%"]
+          y: ["-10%", "20%", "-10%"],
         }}
         transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
         style={{ willChange: "transform" }}
       />
       <motion.div
         className="absolute right-0 top-1/3 w-[60vw] h-[60vh] bg-[var(--brand-blue)]/[0.010] blur-[120px] rounded-full"
-        animate={{ 
+        animate={{
           x: ["20%", "-30%", "20%"],
-          y: ["20%", "-10%", "20%"]
+          y: ["20%", "-10%", "20%"],
         }}
         transition={{ duration: 65, repeat: Infinity, ease: "linear" }}
         style={{ willChange: "transform" }}
@@ -45,13 +45,13 @@ export const AmbientMotion = memo(function AmbientMotion() {
           animate={{
             y: [0, -100 - Math.random() * 200],
             x: [0, (Math.random() - 0.5) * 100],
-            opacity: [0, Math.random() * 0.15 + 0.05, 0]
+            opacity: [0, Math.random() * 0.15 + 0.05, 0],
           }}
           transition={{
             duration: Math.random() * 20 + 20,
             repeat: Infinity,
             delay: Math.random() * 10,
-            ease: "linear"
+            ease: "linear",
           }}
         />
       ))}
@@ -63,18 +63,18 @@ export const AmbientMotion = memo(function AmbientMotion() {
           className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-[var(--brand-blue)]/10 to-transparent"
           style={{
             top: `${20 + i * 30}%`,
-            willChange: "opacity, transform"
+            willChange: "opacity, transform",
           }}
           initial={{ opacity: 0, scaleX: 0 }}
-          animate={{ 
+          animate={{
             opacity: [0, 1, 0],
-            scaleX: [0, 1, 0]
+            scaleX: [0, 1, 0],
           }}
           transition={{
             duration: 15,
             repeat: Infinity,
             delay: i * 5 + Math.random() * 10,
-            ease: "easeInOut"
+            ease: "easeInOut",
           }}
         />
       ))}

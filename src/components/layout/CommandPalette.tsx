@@ -1,28 +1,69 @@
 import { useState, useEffect, useDeferredValue, useMemo, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, ArrowRight, LayoutGrid, PlusCircle, BarChart3, Settings, History, FileText } from "lucide-react";
+import {
+  Search,
+  ArrowRight,
+  LayoutGrid,
+  PlusCircle,
+  BarChart3,
+  Settings,
+  History,
+  FileText,
+} from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 
 const NAVIGATION_LINKS = [
-  { id: "1", title: "New Interview Analysis", icon: PlusCircle, category: "Actions", href: "/analyze" },
-  { id: "2", title: "View Dashboard Overview", icon: LayoutGrid, category: "Navigation", href: "/" },
-  { id: "3", title: "Recent Results (Sarah Jenkins)", icon: BarChart3, category: "Recent", href: "/results" },
+  {
+    id: "1",
+    title: "New Interview Analysis",
+    icon: PlusCircle,
+    category: "Actions",
+    href: "/analyze",
+  },
+  {
+    id: "2",
+    title: "View Dashboard Overview",
+    icon: LayoutGrid,
+    category: "Navigation",
+    href: "/",
+  },
+  {
+    id: "3",
+    title: "Recent Results (Sarah Jenkins)",
+    icon: BarChart3,
+    category: "Recent",
+    href: "/results",
+  },
   { id: "4", title: "System Settings", icon: Settings, category: "Configuration", href: "/" },
   { id: "5", title: "Interview History", icon: History, category: "Navigation", href: "/" },
   { id: "6", title: "Generate PDF Report", icon: FileText, category: "Actions", href: "/results" },
-  { id: "7", title: "Developer Diagnostics", icon: Settings, category: "Hidden", href: "/diagnostics" },
+  {
+    id: "7",
+    title: "Developer Diagnostics",
+    icon: Settings,
+    category: "Hidden",
+    href: "/diagnostics",
+  },
 ];
 
-export const CommandPalette = memo(function CommandPalette({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
+export const CommandPalette = memo(function CommandPalette({
+  isOpen,
+  onClose,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+}) {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query);
 
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const filtered = useMemo(() => 
-    NAVIGATION_LINKS.filter(r => r.title.toLowerCase().includes(deferredQuery.toLowerCase())),
-  [deferredQuery]);
+  const filtered = useMemo(
+    () =>
+      NAVIGATION_LINKS.filter((r) => r.title.toLowerCase().includes(deferredQuery.toLowerCase())),
+    [deferredQuery],
+  );
 
   useEffect(() => {
     setSelectedIndex(0);
@@ -92,19 +133,26 @@ export const CommandPalette = memo(function CommandPalette({ isOpen, onClose }: 
                   onChange={(e) => setQuery(e.target.value)}
                   className="flex-1 bg-transparent border-none outline-none text-base md:text-lg text-white placeholder:text-white/40"
                 />
-                <div className="px-2 py-1 bg-white/5 border border-white/10 rounded text-[10px] text-white/40 font-medium ml-2">ESC</div>
+                <div className="px-2 py-1 bg-white/5 border border-white/10 rounded text-[10px] text-white/40 font-medium ml-2">
+                  ESC
+                </div>
               </div>
 
               <div className="max-h-[60vh] overflow-y-auto p-2 scrollbar-thin">
                 {filtered.length === 0 ? (
-                  <div className="px-4 py-12 text-center text-white/40 text-sm">No results found for "{query}"</div>
+                  <div className="px-4 py-12 text-center text-white/40 text-sm">
+                    No results found for "{query}"
+                  </div>
                 ) : (
                   <div className="flex flex-col gap-1">
                     {filtered.map((item, index) => (
                       <button
                         key={item.id}
                         onMouseEnter={() => setSelectedIndex(index)}
-                        onClick={() => { navigate({ to: item.href }); onClose(); }}
+                        onClick={() => {
+                          navigate({ to: item.href });
+                          onClose();
+                        }}
                         className={`group flex items-center justify-between px-3 py-3 rounded-xl border transition-all duration-200 w-full text-left ${
                           index === selectedIndex
                             ? "bg-[var(--brand-blue)]/10 border-[var(--brand-blue)]/20"
@@ -116,11 +164,15 @@ export const CommandPalette = memo(function CommandPalette({ isOpen, onClose }: 
                             <item.icon className="w-4 h-4 text-white/60 group-hover:text-[var(--brand-blue)] transition-colors" />
                           </div>
                           <div className="flex flex-col">
-                            <span className="text-sm font-medium text-white/80 group-hover:text-white transition-colors">{item.title}</span>
+                            <span className="text-sm font-medium text-white/80 group-hover:text-white transition-colors">
+                              {item.title}
+                            </span>
                             <span className="text-[10px] text-white/40">{item.category}</span>
                           </div>
                         </div>
-                        <ArrowRight className={`w-4 h-4 text-[var(--brand-blue)] transition-all duration-300 ${index === selectedIndex ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0"}`} />
+                        <ArrowRight
+                          className={`w-4 h-4 text-[var(--brand-blue)] transition-all duration-300 ${index === selectedIndex ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0"}`}
+                        />
                       </button>
                     ))}
                   </div>

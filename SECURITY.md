@@ -18,6 +18,7 @@ Instead, please responsibly disclose it by emailing the maintainer. We take secu
 ### Scope
 
 The following areas are considered in-scope for security reports:
+
 - Authentication bypass (JWT manipulation)
 - Prompt Injection in the LLM / RAG pipeline
 - Unauthorized access to historical video uploads or MongoDB sessions

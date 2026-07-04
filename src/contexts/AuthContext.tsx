@@ -6,14 +6,7 @@
  * - Provides login(), register(), logout() actions
  * - Listens for auth:logout events dispatched by the API client on 401
  */
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
 import { apiGet, apiPost, setTokens, clearTokens, getAccessToken } from "@/lib/api-client";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -91,19 +84,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(me);
   }, []);
 
-  const register = useCallback(
-    async (fullName: string, email: string, password: string) => {
-      const data = await apiPost<TokenResponse>("/api/auth/register", {
-        full_name: fullName,
-        email,
-        password,
-      });
-      setTokens(data.access_token, data.refresh_token);
-      const me = await apiGet<UserPublic>("/api/auth/me");
-      setUser(me);
-    },
-    [],
-  );
+  const register = useCallback(async (fullName: string, email: string, password: string) => {
+    const data = await apiPost<TokenResponse>("/api/auth/register", {
+      full_name: fullName,
+      email,
+      password,
+    });
+    setTokens(data.access_token, data.refresh_token);
+    const me = await apiGet<UserPublic>("/api/auth/me");
+    setUser(me);
+  }, []);
 
   const logout = useCallback(() => {
     // Fire-and-forget the logout endpoint (stateless on server)

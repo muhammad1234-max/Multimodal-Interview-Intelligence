@@ -55,7 +55,9 @@ export function Header({ onMenuClick, onOpenCommand }: HeaderProps) {
           </div>
           <div className="flex flex-col">
             <span className="text-white font-medium text-[13px] leading-tight">AI Evaluator</span>
-            <span className="text-[7.5px] text-white/40 font-semibold tracking-[0.2em] uppercase mt-[1px]">Multimodal Intelligence</span>
+            <span className="text-[7.5px] text-white/40 font-semibold tracking-[0.2em] uppercase mt-[1px]">
+              Multimodal Intelligence
+            </span>
           </div>
         </div>
       </div>
@@ -67,7 +69,9 @@ export function Header({ onMenuClick, onOpenCommand }: HeaderProps) {
           className="group flex items-center w-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-[#3054ff]/40 rounded-xl px-4 py-2 transition-all duration-300 shadow-[0_0_15px_rgba(0,0,0,0.1)] hover:shadow-[0_0_20px_rgba(48,84,255,0.15)]"
         >
           <Search className="w-4 h-4 text-white/40 group-hover:text-[#3054ff] mr-3 transition-colors" />
-          <span className="text-sm text-white/40 group-hover:text-white/70 transition-colors mr-auto font-medium">Search anything or press ⌘K...</span>
+          <span className="text-sm text-white/40 group-hover:text-white/70 transition-colors mr-auto font-medium">
+            Search anything or press ⌘K...
+          </span>
           <div className="flex items-center justify-center bg-white/10 border border-white/5 rounded px-1.5 py-0.5 ml-3 group-hover:border-[#3054ff]/30 transition-colors">
             <span className="text-[10px] text-white/60 font-medium">⌘K</span>
           </div>
@@ -96,7 +100,9 @@ export function Header({ onMenuClick, onOpenCommand }: HeaderProps) {
                 {user?.full_name?.split(" ")[0]}
               </span>
             )}
-            <ChevronDown className={`w-4 h-4 text-white/50 group-hover:text-white transition-all ${dropdownOpen ? "rotate-180" : ""}`} />
+            <ChevronDown
+              className={`w-4 h-4 text-white/50 group-hover:text-white transition-all ${dropdownOpen ? "rotate-180" : ""}`}
+            />
           </button>
 
           {/* Dropdown */}
@@ -131,7 +137,10 @@ export function Header({ onMenuClick, onOpenCommand }: HeaderProps) {
 
                 {!isAuthenticated && (
                   <button
-                    onClick={() => { setDropdownOpen(false); navigate({ to: "/login" }); }}
+                    onClick={() => {
+                      setDropdownOpen(false);
+                      navigate({ to: "/login" });
+                    }}
                     className="w-full flex items-center gap-3 px-4 py-3 text-sm text-white/60 hover:text-white hover:bg-white/5 transition-all duration-200"
                   >
                     Sign in

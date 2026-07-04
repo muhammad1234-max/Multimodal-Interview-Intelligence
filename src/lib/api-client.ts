@@ -11,11 +11,9 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:8000/api
 
 // ── Token storage helpers ─────────────────────────────────────────────────────
 
-export const getAccessToken = (): string | null =>
-  localStorage.getItem("access_token");
+export const getAccessToken = (): string | null => localStorage.getItem("access_token");
 
-export const getRefreshToken = (): string | null =>
-  localStorage.getItem("refresh_token");
+export const getRefreshToken = (): string | null => localStorage.getItem("refresh_token");
 
 export const setTokens = (accessToken: string, refreshToken: string): void => {
   localStorage.setItem("access_token", accessToken);
@@ -67,11 +65,7 @@ async function tryRefresh(): Promise<boolean> {
 
 // ── Core fetch wrapper ────────────────────────────────────────────────────────
 
-async function apiFetch<T>(
-  path: string,
-  options: RequestInit = {},
-  retry = true,
-): Promise<T> {
+async function apiFetch<T>(path: string, options: RequestInit = {}, retry = true): Promise<T> {
   // Build the full URL — support both relative paths and absolute URLs
   const url = path.startsWith("http") ? path : `http://127.0.0.1:8000${path}`;
 
@@ -110,8 +104,7 @@ async function apiFetch<T>(
 
 // ── Typed convenience methods ─────────────────────────────────────────────────
 
-export const apiGet = <T>(path: string): Promise<T> =>
-  apiFetch<T>(path, { method: "GET" });
+export const apiGet = <T>(path: string): Promise<T> => apiFetch<T>(path, { method: "GET" });
 
 export const apiPost = <T>(path: string, body: unknown): Promise<T> =>
   apiFetch<T>(path, {
@@ -120,5 +113,4 @@ export const apiPost = <T>(path: string, body: unknown): Promise<T> =>
     body: JSON.stringify(body),
   });
 
-export const apiDelete = <T>(path: string): Promise<T> =>
-  apiFetch<T>(path, { method: "DELETE" });
+export const apiDelete = <T>(path: string): Promise<T> => apiFetch<T>(path, { method: "DELETE" });

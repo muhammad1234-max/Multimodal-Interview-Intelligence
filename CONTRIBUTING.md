@@ -30,6 +30,7 @@ To run the platform locally, ensure you have Node.js 18+ and Python 3.10+ instal
 At this point, you're ready to make your changes! Feel free to ask for help; everyone is a beginner at first.
 
 Ensure you adhere to our coding standards:
+
 - **TypeScript**: Use strict typing. Avoid `any` where possible.
 - **Python**: Follow PEP-8. Use structured JSON logging via `backend.utils.logger`.
 
@@ -42,6 +43,7 @@ Then merge your feature branch into your master branch, and push it to your fork
 Finally, go to GitHub and [make a Pull Request](https://help.github.com/articles/creating-a-pull-request) to our `main` branch.
 
 ### PR Requirements:
+
 - Pass all ESLint and TypeScript compilation checks (`npm run lint` and `tsc --noEmit`).
 - Do not commit `.env` files or API keys.
 - Ensure the React UI does not break on mobile viewports.

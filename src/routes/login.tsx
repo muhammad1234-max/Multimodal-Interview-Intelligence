@@ -62,7 +62,6 @@ function LoginPage() {
 
   return (
     <div className="relative min-h-[100dvh] pt-20 pb-12 text-foreground flex items-center justify-center overflow-hidden px-4">
-
       {/* ── BACKGROUND (identical to Landing/Analyze) ── */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
         <Particles />
@@ -103,7 +102,10 @@ function LoginPage() {
         >
           {/* Header */}
           <div className="mb-10 text-center flex flex-col items-center">
-            <h1 className="text-3xl font-bold text-white tracking-tight mb-3" style={{ fontFamily: "var(--font-serif)" }}>
+            <h1
+              className="text-3xl font-bold text-white tracking-tight mb-3"
+              style={{ fontFamily: "var(--font-serif)" }}
+            >
               Welcome back
             </h1>
             <p className="text-sm text-white/50 max-w-[280px] leading-relaxed">
@@ -112,10 +114,12 @@ function LoginPage() {
           </div>
 
           <form id="login-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-
             {/* Email field */}
             <div className="space-y-2">
-              <label htmlFor="login-email" className="text-xs font-semibold text-white/60 uppercase tracking-widest">
+              <label
+                htmlFor="login-email"
+                className="text-xs font-semibold text-white/60 uppercase tracking-widest"
+              >
                 Email
               </label>
               <div className="relative">
@@ -146,7 +150,10 @@ function LoginPage() {
 
             {/* Password field */}
             <div className="space-y-2">
-              <label htmlFor="login-password" className="text-xs font-semibold text-white/60 uppercase tracking-widest">
+              <label
+                htmlFor="login-password"
+                className="text-xs font-semibold text-white/60 uppercase tracking-widest"
+              >
                 Password
               </label>
               <div className="relative">
@@ -250,8 +257,7 @@ function LoginPage() {
           transition={{ delay: 0.5 }}
           className="text-center text-xs text-white/20 mt-6"
         >
-          By signing in you agree to our{" "}
-          <span className="text-white/35">Terms of Service</span> and{" "}
+          By signing in you agree to our <span className="text-white/35">Terms of Service</span> and{" "}
           <span className="text-white/35">Privacy Policy</span>.
         </motion.p>
       </motion.div>

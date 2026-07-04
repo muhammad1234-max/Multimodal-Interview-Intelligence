@@ -2,15 +2,41 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import {
-  History, Brain, TrendingUp, Trash2, ChevronRight,
-  Clock, MessageSquareText, Sparkles, Loader2, RefreshCw,
-  AlertTriangle, Search, SlidersHorizontal, Calendar,
-  BarChart3, User, Quote, CheckCircle2, ChevronDown, ChevronUp,
+  History,
+  Brain,
+  TrendingUp,
+  Trash2,
+  ChevronRight,
+  Clock,
+  MessageSquareText,
+  Sparkles,
+  Loader2,
+  RefreshCw,
+  AlertTriangle,
+  Search,
+  SlidersHorizontal,
+  Calendar,
+  BarChart3,
+  User,
+  Quote,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
-  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  LineChart, Line, Legend, BarChart, Bar, Cell,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  Legend,
+  BarChart,
+  Bar,
+  Cell,
 } from "recharts";
 import { Particles } from "../components/ui/Particles";
 import { AmbientMotion } from "../components/ui/AmbientMotion";
@@ -21,10 +47,17 @@ export const Route = createFileRoute("/history")({
   head: () => ({
     meta: [
       { title: "Dashboard & History — AI Interview Evaluator" },
-      { name: "description", content: "Interactive analytics trend dashboard and past interview history." },
+      {
+        name: "description",
+        content: "Interactive analytics trend dashboard and past interview history.",
+      },
     ],
   }),
-  component: () => <AuthGuard><HistoryPage /></AuthGuard>,
+  component: () => (
+    <AuthGuard>
+      <HistoryPage />
+    </AuthGuard>
+  ),
 });
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -57,16 +90,23 @@ function ChartTooltip({ active, payload, label, valuePrefix = "", valueSuffix = 
   if (active && payload && payload.length) {
     return (
       <div className="bg-[#030309]/90 backdrop-blur-md border border-white/10 p-3.5 rounded-2xl shadow-2xl">
-        <p className="text-[10px] uppercase tracking-widest text-white/30 font-semibold mb-2">{label}</p>
+        <p className="text-[10px] uppercase tracking-widest text-white/30 font-semibold mb-2">
+          {label}
+        </p>
         <div className="space-y-1">
           {payload.map((pld: any) => (
             <div key={pld.name} className="flex items-center gap-4 justify-between">
               <span className="text-xs text-white/60 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: pld.color || pld.fill }} />
+                <span
+                  className="w-1.5 h-1.5 rounded-full"
+                  style={{ backgroundColor: pld.color || pld.fill }}
+                />
                 {pld.name}
               </span>
               <span className="text-xs font-bold text-white">
-                {valuePrefix}{typeof pld.value === "number" ? pld.value.toFixed(0) : pld.value}{valueSuffix}
+                {valuePrefix}
+                {typeof pld.value === "number" ? pld.value.toFixed(0) : pld.value}
+                {valueSuffix}
               </span>
             </div>
           ))}
@@ -88,7 +128,8 @@ function scoreColor(score: number): string {
 
 function scoreGlow(score: number): string {
   if (score >= 80) return "shadow-[0_0_20px_rgba(255,255,255,0.06)] hover:border-white/20";
-  if (score >= 65) return "shadow-[0_0_20px_rgba(48,84,255,0.12)] hover:border-[var(--brand-blue)]/30";
+  if (score >= 65)
+    return "shadow-[0_0_20px_rgba(48,84,255,0.12)] hover:border-[var(--brand-blue)]/30";
   if (score >= 45) return "shadow-[0_0_20px_rgba(251,146,60,0.1)] hover:border-orange-500/20";
   return "shadow-[0_0_20px_rgba(239,68,68,0.08)] hover:border-red-500/20";
 }
@@ -173,7 +214,8 @@ function HistoryPage() {
   // Filtered sessions computation
   const filteredSessions = useMemo(() => {
     return sessions.filter((s) => {
-      const matchesSearch = s.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      const matchesSearch =
+        s.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
         s.transcription.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesScore = s.final_score >= minScore;
 
@@ -212,26 +254,24 @@ function HistoryPage() {
 
   // Chronological data mapping for Recharts (oldest to newest)
   const chartData = useMemo(() => {
-    return [...filteredSessions]
-      .reverse()
-      .map((s) => {
-        const dateStr = formatDate(s.timestamp, true);
-        const confidenceVal =
-          s.confidence_label === "High" ? 3 : s.confidence_label === "Medium" ? 2 : 1;
+    return [...filteredSessions].reverse().map((s) => {
+      const dateStr = formatDate(s.timestamp, true);
+      const confidenceVal =
+        s.confidence_label === "High" ? 3 : s.confidence_label === "Medium" ? 2 : 1;
 
-        return {
-          date: dateStr,
-          Score: Math.round(s.final_score),
-          Relevance: Math.round(s.relevance * 100),
-          Sentiment: Math.round(s.sentiment * 100),
-          Confidence: confidenceVal * 33.33,
-          confidenceLabel: s.confidence_label,
-          Happy: Math.round((s.emotion_probs?.happy ?? 0) * 100),
-          Neutral: Math.round((s.emotion_probs?.neutral ?? 0) * 100),
-          Anxious: Math.round((s.emotion_probs?.anxious ?? 0) * 100),
-          Sad: Math.round((s.emotion_probs?.sad ?? 0) * 100),
-        };
-      });
+      return {
+        date: dateStr,
+        Score: Math.round(s.final_score),
+        Relevance: Math.round(s.relevance * 100),
+        Sentiment: Math.round(s.sentiment * 100),
+        Confidence: confidenceVal * 33.33,
+        confidenceLabel: s.confidence_label,
+        Happy: Math.round((s.emotion_probs?.happy ?? 0) * 100),
+        Neutral: Math.round((s.emotion_probs?.neutral ?? 0) * 100),
+        Anxious: Math.round((s.emotion_probs?.anxious ?? 0) * 100),
+        Sad: Math.round((s.emotion_probs?.sad ?? 0) * 100),
+      };
+    });
   }, [filteredSessions]);
 
   // Reset Filters helper
@@ -254,7 +294,6 @@ function HistoryPage() {
       </div>
 
       <div className="relative z-20 px-4 md:px-8 lg:px-16 pt-32 pb-24 max-w-7xl mx-auto space-y-10">
-
         {/* ── HEADER ── */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <motion.div
@@ -270,11 +309,15 @@ function HistoryPage() {
                 Analytics & History Workspace
               </span>
             </div>
-            <h1 className="text-[36px] md:text-[56px] font-bold tracking-tight text-white leading-none" style={{ fontFamily: "var(--font-serif)" }}>
+            <h1
+              className="text-[36px] md:text-[56px] font-bold tracking-tight text-white leading-none"
+              style={{ fontFamily: "var(--font-serif)" }}
+            >
               Interview Dashboard.
             </h1>
             <p className="text-sm text-white/45 mt-3 max-w-xl leading-relaxed">
-              Track your performance over time, search transcripts, isolate metrics, and examine detailed session analysis logs.
+              Track your performance over time, search transcripts, isolate metrics, and examine
+              detailed session analysis logs.
             </p>
           </motion.div>
 
@@ -299,10 +342,30 @@ function HistoryPage() {
         {/* ── KEY PERFORMANCE METRICS ── */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: "Total Sessions", val: filteredSessions.length, detail: `${totalCount} overall in DB`, icon: History },
-            { label: "Average Score", val: `${Math.round(stats.avgScore)}%`, detail: `Peak performance: ${Math.round(stats.highestScore)}%`, icon: TrendingUp },
-            { label: "Avg Relevance", val: `${Math.round(stats.avgRelevance)}%`, detail: "Question match rate", icon: Brain },
-            { label: "Avg Sentiment", val: `${Math.round(stats.avgSentiment)}%`, detail: "Tonal positivity rate", icon: MessageSquareText },
+            {
+              label: "Total Sessions",
+              val: filteredSessions.length,
+              detail: `${totalCount} overall in DB`,
+              icon: History,
+            },
+            {
+              label: "Average Score",
+              val: `${Math.round(stats.avgScore)}%`,
+              detail: `Peak performance: ${Math.round(stats.highestScore)}%`,
+              icon: TrendingUp,
+            },
+            {
+              label: "Avg Relevance",
+              val: `${Math.round(stats.avgRelevance)}%`,
+              detail: "Question match rate",
+              icon: Brain,
+            },
+            {
+              label: "Avg Sentiment",
+              val: `${Math.round(stats.avgSentiment)}%`,
+              detail: "Tonal positivity rate",
+              icon: MessageSquareText,
+            },
           ].map((item, i) => (
             <motion.div
               key={item.label}
@@ -312,10 +375,17 @@ function HistoryPage() {
               className="bg-card/50 backdrop-blur-md border border-white/5 rounded-3xl p-5 relative overflow-hidden group hover:border-white/10 transition-all duration-300"
             >
               <div className="flex items-center justify-between mb-3">
-                <span className="text-[10px] uppercase tracking-widest text-white/35 font-semibold">{item.label}</span>
-                <item.icon className="w-4 h-4 text-white/20 group-hover:text-[var(--brand-blue)] transition-colors" strokeWidth={1.5} />
+                <span className="text-[10px] uppercase tracking-widest text-white/35 font-semibold">
+                  {item.label}
+                </span>
+                <item.icon
+                  className="w-4 h-4 text-white/20 group-hover:text-[var(--brand-blue)] transition-colors"
+                  strokeWidth={1.5}
+                />
               </div>
-              <div className="text-2xl md:text-3xl font-bold text-white tracking-tight mb-1">{item.val}</div>
+              <div className="text-2xl md:text-3xl font-bold text-white tracking-tight mb-1">
+                {item.val}
+              </div>
               <div className="text-[10px] text-white/40">{item.detail}</div>
             </motion.div>
           ))}
@@ -332,38 +402,58 @@ function HistoryPage() {
             <div className="flex items-center justify-between border-b border-white/5 pb-4">
               <div className="flex items-center gap-2">
                 <TrendingUp className="w-4 h-4 text-orange-400" />
-                <h3 className="text-xs font-semibold text-white/80 uppercase tracking-widest">Progress Analytics</h3>
+                <h3 className="text-xs font-semibold text-white/80 uppercase tracking-widest">
+                  Progress Analytics
+                </h3>
               </div>
-              <span className="text-[10px] text-white/40 font-mono">Latest session vs. Previous log session</span>
+              <span className="text-[10px] text-white/40 font-mono">
+                Latest session vs. Previous log session
+              </span>
             </div>
 
             {/* Score matrix layout */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {/* Current Score */}
               <div className="bg-white/[0.015] border border-white/5 p-4 rounded-2xl">
-                <span className="text-[9px] uppercase tracking-widest text-white/40 block mb-1">Current Score</span>
-                <div className="text-2xl font-bold text-white font-mono">{Math.round(filteredSessions[0].final_score)}%</div>
+                <span className="text-[9px] uppercase tracking-widest text-white/40 block mb-1">
+                  Current Score
+                </span>
+                <div className="text-2xl font-bold text-white font-mono">
+                  {Math.round(filteredSessions[0].final_score)}%
+                </div>
                 <div className="text-[9px] text-white/30 mt-1">Latest completed session</div>
               </div>
 
               {/* Previous Score */}
               <div className="bg-white/[0.015] border border-white/5 p-4 rounded-2xl">
-                <span className="text-[9px] uppercase tracking-widest text-white/40 block mb-1">Previous Score</span>
-                <div className="text-2xl font-bold text-white/70 font-mono">{Math.round(filteredSessions[1].final_score)}%</div>
+                <span className="text-[9px] uppercase tracking-widest text-white/40 block mb-1">
+                  Previous Score
+                </span>
+                <div className="text-2xl font-bold text-white/70 font-mono">
+                  {Math.round(filteredSessions[1].final_score)}%
+                </div>
                 <div className="text-[9px] text-white/30 mt-1">Session before latest</div>
               </div>
 
               {/* Best Score */}
               <div className="bg-white/[0.015] border border-white/5 p-4 rounded-2xl">
-                <span className="text-[9px] uppercase tracking-widest text-white/40 block mb-1">Best Score</span>
-                <div className="text-2xl font-bold text-white font-mono">{Math.round(stats.highestScore)}%</div>
+                <span className="text-[9px] uppercase tracking-widest text-white/40 block mb-1">
+                  Best Score
+                </span>
+                <div className="text-2xl font-bold text-white font-mono">
+                  {Math.round(stats.highestScore)}%
+                </div>
                 <div className="text-[9px] text-white/30 mt-1">Highest score overall</div>
               </div>
 
               {/* Average Score */}
               <div className="bg-white/[0.015] border border-white/5 p-4 rounded-2xl">
-                <span className="text-[9px] uppercase tracking-widest text-white/40 block mb-1">Average Score</span>
-                <div className="text-2xl font-bold text-white font-mono">{Math.round(stats.avgScore)}%</div>
+                <span className="text-[9px] uppercase tracking-widest text-white/40 block mb-1">
+                  Average Score
+                </span>
+                <div className="text-2xl font-bold text-white font-mono">
+                  {Math.round(stats.avgScore)}%
+                </div>
                 <div className="text-[9px] text-white/30 mt-1">Historical running average</div>
               </div>
             </div>
@@ -389,27 +479,44 @@ function HistoryPage() {
                   curr: filteredSessions[0].relevance * 100,
                   prev: filteredSessions[1].relevance * 100,
                   suffix: "%",
-                }
+                },
               ].map((metric) => {
                 const diff = metric.curr - metric.prev;
                 const pctChange = metric.prev > 0 ? (diff / metric.prev) * 100 : 0;
                 const positive = diff >= 0;
 
-                const displayCurr = metric.isFloat ? metric.curr.toFixed(1) : Math.round(metric.curr);
-                const displayPrev = metric.isFloat ? metric.prev.toFixed(1) : Math.round(metric.prev);
+                const displayCurr = metric.isFloat
+                  ? metric.curr.toFixed(1)
+                  : Math.round(metric.curr);
+                const displayPrev = metric.isFloat
+                  ? metric.prev.toFixed(1)
+                  : Math.round(metric.prev);
 
                 return (
-                  <div key={metric.label} className="bg-white/[0.01] border border-white/5 p-4 rounded-xl flex items-center justify-between gap-4">
+                  <div
+                    key={metric.label}
+                    className="bg-white/[0.01] border border-white/5 p-4 rounded-xl flex items-center justify-between gap-4"
+                  >
                     <div>
-                      <span className="text-[9px] uppercase tracking-widest text-white/40 block mb-0.5">{metric.label}</span>
+                      <span className="text-[9px] uppercase tracking-widest text-white/40 block mb-0.5">
+                        {metric.label}
+                      </span>
                       <span className="text-xs text-white/70 font-medium font-mono">
-                        {displayCurr}{metric.suffix} <span className="text-white/30 text-[10px] font-sans">vs {displayPrev}{metric.suffix}</span>
+                        {displayCurr}
+                        {metric.suffix}{" "}
+                        <span className="text-white/30 text-[10px] font-sans">
+                          vs {displayPrev}
+                          {metric.suffix}
+                        </span>
                       </span>
                     </div>
-                    <div className={`px-2.5 py-1 rounded-lg text-[10px] font-bold font-mono ${
-                      positive ? "bg-green-500/10 text-green-400" : "bg-red-500/10 text-red-400"
-                    }`}>
-                      {positive ? "+" : ""}{Math.round(pctChange)}%
+                    <div
+                      className={`px-2.5 py-1 rounded-lg text-[10px] font-bold font-mono ${
+                        positive ? "bg-green-500/10 text-green-400" : "bg-red-500/10 text-red-400"
+                      }`}
+                    >
+                      {positive ? "+" : ""}
+                      {Math.round(pctChange)}%
                     </div>
                   </div>
                 );
@@ -430,7 +537,9 @@ function HistoryPage() {
             >
               <div className="flex items-center gap-2 mb-4">
                 <BarChart3 className="w-4 h-4 text-[var(--brand-blue)]" />
-                <h3 className="text-sm font-semibold text-white/80 uppercase tracking-widest">Score Performance Trend</h3>
+                <h3 className="text-sm font-semibold text-white/80 uppercase tracking-widest">
+                  Score Performance Trend
+                </h3>
               </div>
               <div className="flex-1 w-full min-h-[220px]">
                 <ResponsiveContainer width="100%" height="100%">
@@ -441,10 +550,27 @@ function HistoryPage() {
                         <stop offset="95%" stopColor="var(--brand-blue)" stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <XAxis dataKey="date" tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 10 }} axisLine={false} tickLine={false} />
-                    <YAxis domain={[0, 100]} tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 10 }} axisLine={false} tickLine={false} />
+                    <XAxis
+                      dataKey="date"
+                      tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 10 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      domain={[0, 100]}
+                      tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 10 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
                     <Tooltip content={<ChartTooltip valueSuffix="%" />} />
-                    <Area type="monotone" dataKey="Score" stroke="var(--brand-blue)" strokeWidth={2} fillOpacity={1} fill="url(#scoreGlow)" />
+                    <Area
+                      type="monotone"
+                      dataKey="Score"
+                      stroke="var(--brand-blue)"
+                      strokeWidth={2}
+                      fillOpacity={1}
+                      fill="url(#scoreGlow)"
+                    />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -459,18 +585,56 @@ function HistoryPage() {
             >
               <div className="flex items-center gap-2 mb-4">
                 <Brain className="w-4 h-4 text-[var(--brand-blue)]" />
-                <h3 className="text-sm font-semibold text-white/80 uppercase tracking-widest">Relevance, Sentiment & Confidence</h3>
+                <h3 className="text-sm font-semibold text-white/80 uppercase tracking-widest">
+                  Relevance, Sentiment & Confidence
+                </h3>
               </div>
               <div className="flex-1 w-full min-h-[220px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={chartData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
-                    <XAxis dataKey="date" tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 10 }} axisLine={false} tickLine={false} />
-                    <YAxis domain={[0, 100]} tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 10 }} axisLine={false} tickLine={false} />
+                    <XAxis
+                      dataKey="date"
+                      tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 10 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      domain={[0, 100]}
+                      tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 10 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
                     <Tooltip content={<ChartTooltip valueSuffix="%" />} />
-                    <Legend verticalAlign="top" height={36} iconType="circle" wrapperStyle={{ fontSize: 11, color: "rgba(255,255,255,0.6)" }} />
-                    <Line type="monotone" dataKey="Relevance" stroke="var(--brand-blue)" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
-                    <Line type="monotone" dataKey="Sentiment" stroke="rgba(255,255,255,0.5)" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
-                    <Line type="monotone" dataKey="Confidence" stroke="#f59e0b" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
+                    <Legend
+                      verticalAlign="top"
+                      height={36}
+                      iconType="circle"
+                      wrapperStyle={{ fontSize: 11, color: "rgba(255,255,255,0.6)" }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="Relevance"
+                      stroke="var(--brand-blue)"
+                      strokeWidth={2}
+                      dot={{ r: 3 }}
+                      activeDot={{ r: 5 }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="Sentiment"
+                      stroke="rgba(255,255,255,0.5)"
+                      strokeWidth={2}
+                      dot={{ r: 3 }}
+                      activeDot={{ r: 5 }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="Confidence"
+                      stroke="#f59e0b"
+                      strokeWidth={2}
+                      dot={{ r: 3 }}
+                      activeDot={{ r: 5 }}
+                    />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -485,19 +649,60 @@ function HistoryPage() {
             >
               <div className="flex items-center gap-2 mb-4">
                 <Sparkles className="w-4 h-4 text-[var(--brand-blue)]" />
-                <h3 className="text-sm font-semibold text-white/80 uppercase tracking-widest">Facial Emotion Progression</h3>
+                <h3 className="text-sm font-semibold text-white/80 uppercase tracking-widest">
+                  Facial Emotion Progression
+                </h3>
               </div>
               <div className="flex-1 w-full min-h-[220px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={chartData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
-                    <XAxis dataKey="date" tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 10 }} axisLine={false} tickLine={false} />
-                    <YAxis domain={[0, 100]} tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 10 }} axisLine={false} tickLine={false} />
+                    <XAxis
+                      dataKey="date"
+                      tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 10 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      domain={[0, 100]}
+                      tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 10 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
                     <Tooltip content={<ChartTooltip valueSuffix="%" />} />
-                    <Legend verticalAlign="top" height={36} iconType="circle" wrapperStyle={{ fontSize: 11 }} />
-                    <Line type="monotone" dataKey="Happy" stroke="#ffffff" strokeWidth={1.5} dot={{ r: 2 }} />
-                    <Line type="monotone" dataKey="Neutral" stroke="var(--brand-blue)" strokeWidth={1.5} dot={{ r: 2 }} />
-                    <Line type="monotone" dataKey="Anxious" stroke="#f59e0b" strokeWidth={1.5} dot={{ r: 2 }} />
-                    <Line type="monotone" dataKey="Sad" stroke="#6b7280" strokeWidth={1.5} dot={{ r: 2 }} />
+                    <Legend
+                      verticalAlign="top"
+                      height={36}
+                      iconType="circle"
+                      wrapperStyle={{ fontSize: 11 }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="Happy"
+                      stroke="#ffffff"
+                      strokeWidth={1.5}
+                      dot={{ r: 2 }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="Neutral"
+                      stroke="var(--brand-blue)"
+                      strokeWidth={1.5}
+                      dot={{ r: 2 }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="Anxious"
+                      stroke="#f59e0b"
+                      strokeWidth={1.5}
+                      dot={{ r: 2 }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="Sad"
+                      stroke="#6b7280"
+                      strokeWidth={1.5}
+                      dot={{ r: 2 }}
+                    />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -519,7 +724,9 @@ function HistoryPage() {
           <div className="flex items-center justify-between border-b border-white/5 pb-4">
             <div className="flex items-center gap-2">
               <SlidersHorizontal className="w-4 h-4 text-white/50" />
-              <span className="text-xs font-semibold text-white/70 uppercase tracking-widest">Filter System</span>
+              <span className="text-xs font-semibold text-white/70 uppercase tracking-widest">
+                Filter System
+              </span>
             </div>
             {(searchQuery || minScore > 0 || startDate || endDate) && (
               <button
@@ -534,7 +741,10 @@ function HistoryPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Filter: Question & Transcript Text */}
             <div className="space-y-2">
-              <label htmlFor="search-input" className="text-[10px] font-semibold text-white/60 uppercase tracking-widest">
+              <label
+                htmlFor="search-input"
+                className="text-[10px] font-semibold text-white/60 uppercase tracking-widest"
+              >
                 Search Question / Text
               </label>
               <div className="relative">
@@ -553,7 +763,10 @@ function HistoryPage() {
             {/* Filter: Minimum Score Range */}
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <label htmlFor="score-range" className="text-[10px] font-semibold text-white/60 uppercase tracking-widest">
+                <label
+                  htmlFor="score-range"
+                  className="text-[10px] font-semibold text-white/60 uppercase tracking-widest"
+                >
                   Min Score
                 </label>
                 <span className="text-xs font-mono text-white/70 font-semibold">{minScore}%</span>
@@ -573,7 +786,10 @@ function HistoryPage() {
 
             {/* Filter: Start Date */}
             <div className="space-y-2">
-              <label htmlFor="start-date" className="text-[10px] font-semibold text-white/60 uppercase tracking-widest flex items-center gap-1.5">
+              <label
+                htmlFor="start-date"
+                className="text-[10px] font-semibold text-white/60 uppercase tracking-widest flex items-center gap-1.5"
+              >
                 <Calendar className="w-3 h-3 text-white/40" />
                 Start Date
               </label>
@@ -588,7 +804,10 @@ function HistoryPage() {
 
             {/* Filter: End Date */}
             <div className="space-y-2">
-              <label htmlFor="end-date" className="text-[10px] font-semibold text-white/60 uppercase tracking-widest flex items-center gap-1.5">
+              <label
+                htmlFor="end-date"
+                className="text-[10px] font-semibold text-white/60 uppercase tracking-widest flex items-center gap-1.5"
+              >
                 <Calendar className="w-3 h-3 text-white/40" />
                 End Date
               </label>
@@ -605,11 +824,12 @@ function HistoryPage() {
 
         {/* ── WORKSPACE SECTION: HISTORY LOG & TRANSCRIPT PREVIEW ── */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-
           {/* List of Sessions */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center justify-between mb-2 px-2">
-              <span className="text-xs font-semibold text-white/40 uppercase tracking-widest">Interview Logs ({filteredSessions.length})</span>
+              <span className="text-xs font-semibold text-white/40 uppercase tracking-widest">
+                Interview Logs ({filteredSessions.length})
+              </span>
             </div>
 
             {isLoading ? (
@@ -618,7 +838,9 @@ function HistoryPage() {
                   <div className="absolute inset-0 rounded-2xl bg-[var(--brand-blue)]/20 blur-xl animate-pulse" />
                   <Loader2 className="w-6 h-6 text-[var(--brand-blue)] animate-spin relative z-10" />
                 </div>
-                <span className="text-sm text-white/50 font-medium">Loading historical analytics...</span>
+                <span className="text-sm text-white/50 font-medium">
+                  Loading historical analytics...
+                </span>
               </div>
             ) : filteredSessions.length === 0 ? (
               <div className="bg-card/30 backdrop-blur-xl border border-white/10 rounded-3xl p-14 text-center space-y-5 shadow-2xl relative overflow-hidden">
@@ -629,7 +851,8 @@ function HistoryPage() {
                   </div>
                   <h4 className="text-lg font-semibold text-white/90 mb-2">No Sessions Found</h4>
                   <p className="text-sm text-white/50 max-w-sm mb-6 leading-relaxed">
-                    We couldn't find any interview sessions matching your current filters. Try adjusting your search criteria.
+                    We couldn't find any interview sessions matching your current filters. Try
+                    adjusting your search criteria.
                   </p>
                   <button
                     onClick={resetFilters}
@@ -650,18 +873,26 @@ function HistoryPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3, delay: Math.min(10, index) * 0.04 }}
                       className={`group relative bg-card/60 backdrop-blur-md border rounded-3xl overflow-hidden cursor-pointer transition-all duration-300 ${
-                        isSelected ? "border-[var(--brand-blue)]/60 shadow-[0_0_20px_rgba(48,84,255,0.1)]" : "border-white/8 hover:border-white/20"
+                        isSelected
+                          ? "border-[var(--brand-blue)]/60 shadow-[0_0_20px_rgba(48,84,255,0.1)]"
+                          : "border-white/8 hover:border-white/20"
                       }`}
                       onClick={() => setSelectedSession(session)}
                     >
                       <div className="p-5 flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
                         <div className="flex items-start gap-4">
                           {/* Score Badge */}
-                          <div className={`w-12 h-12 rounded-2xl bg-white/[0.02] border border-white/5 flex flex-col items-center justify-center shrink-0`}>
-                            <span className={`text-base font-bold tabular-nums leading-none ${scoreColor(session.final_score)}`}>
+                          <div
+                            className={`w-12 h-12 rounded-2xl bg-white/[0.02] border border-white/5 flex flex-col items-center justify-center shrink-0`}
+                          >
+                            <span
+                              className={`text-base font-bold tabular-nums leading-none ${scoreColor(session.final_score)}`}
+                            >
                               {Math.round(session.final_score)}
                             </span>
-                            <span className="text-[7px] uppercase tracking-widest text-white/30 mt-0.5 font-bold">/100</span>
+                            <span className="text-[7px] uppercase tracking-widest text-white/30 mt-0.5 font-bold">
+                              /100
+                            </span>
                           </div>
 
                           <div className="min-w-0">
@@ -673,7 +904,12 @@ function HistoryPage() {
                               {session.question}
                             </h4>
                             <p className="text-[11px] text-white/40 leading-relaxed mt-1.5 max-w-[280px] sm:max-w-[420px] line-clamp-1 italic">
-                              "{session.transcription ? (session.transcription.substring(0, 90) + (session.transcription.length > 90 ? '...' : '')) : 'No voice transcription detected.'}"
+                              "
+                              {session.transcription
+                                ? session.transcription.substring(0, 90) +
+                                  (session.transcription.length > 90 ? "..." : "")
+                                : "No voice transcription detected."}
+                              "
                             </p>
                           </div>
                         </div>
@@ -681,13 +917,20 @@ function HistoryPage() {
                         {/* Right Section */}
                         <div className="flex items-center gap-4 shrink-0 sm:ml-auto">
                           <div className="hidden sm:flex flex-col items-end">
-                            <span className="text-[9px] uppercase tracking-widest text-white/30">Confidence</span>
-                            <span className="text-xs font-semibold text-white/70">{session.confidence_label}</span>
+                            <span className="text-[9px] uppercase tracking-widest text-white/30">
+                              Confidence
+                            </span>
+                            <span className="text-xs font-semibold text-white/70">
+                              {session.confidence_label}
+                            </span>
                           </div>
 
                           <div className="flex items-center gap-2">
                             {confirmDeleteId === session.id ? (
-                              <div className="flex items-center gap-1.5 bg-red-950/20 border border-red-900/40 rounded-xl p-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                              <div
+                                className="flex items-center gap-1.5 bg-red-950/20 border border-red-900/40 rounded-xl p-1 shrink-0"
+                                onClick={(e) => e.stopPropagation()}
+                              >
                                 <button
                                   onClick={() => deleteSession(session.id)}
                                   className="px-2.5 py-1 rounded-lg bg-red-500/10 text-xs text-red-400 hover:bg-red-500/25 transition-all"
@@ -704,7 +947,10 @@ function HistoryPage() {
                             ) : (
                               <button
                                 id={`delete-btn-${session.id}`}
-                                onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(session.id); }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setConfirmDeleteId(session.id);
+                                }}
                                 className="w-8 h-8 rounded-xl flex items-center justify-center text-white/20 hover:text-red-400 hover:bg-red-500/10 transition-colors shrink-0"
                               >
                                 {deletingId === session.id ? (
@@ -734,7 +980,9 @@ function HistoryPage() {
 
           {/* Transcript History / Detailed Inspector panel */}
           <div className="lg:col-span-1 space-y-4">
-            <span className="text-xs font-semibold text-white/40 uppercase tracking-widest px-1">Session Detail & Transcript</span>
+            <span className="text-xs font-semibold text-white/40 uppercase tracking-widest px-1">
+              Session Detail & Transcript
+            </span>
 
             <div className="bg-card/65 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl relative min-h-[380px] flex flex-col justify-between">
               {selectedSession ? (
@@ -742,8 +990,12 @@ function HistoryPage() {
                   <div className="space-y-5">
                     {/* Header */}
                     <div>
-                      <span className="text-[9px] uppercase tracking-widest text-[var(--brand-blue)] font-bold">Metadata</span>
-                      <h4 className="text-sm font-semibold text-white mt-1 leading-snug">{selectedSession.question}</h4>
+                      <span className="text-[9px] uppercase tracking-widest text-[var(--brand-blue)] font-bold">
+                        Metadata
+                      </span>
+                      <h4 className="text-sm font-semibold text-white mt-1 leading-snug">
+                        {selectedSession.question}
+                      </h4>
                       <p className="text-[10px] text-white/35 font-mono mt-1.5 flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         {formatDate(selectedSession.timestamp)}
@@ -751,19 +1003,31 @@ function HistoryPage() {
                     </div>
 
                     <div className="border-t border-white/5 pt-4">
-                      <span className="text-[9px] uppercase tracking-widest text-white/40 font-bold block mb-1">Uploaded Video</span>
-                      <span className="text-xs font-mono text-white/70 break-all">{selectedSession.video_filename}</span>
+                      <span className="text-[9px] uppercase tracking-widest text-white/40 font-bold block mb-1">
+                        Uploaded Video
+                      </span>
+                      <span className="text-xs font-mono text-white/70 break-all">
+                        {selectedSession.video_filename}
+                      </span>
                     </div>
 
                     {/* Metrics snapshot */}
                     <div className="border-t border-white/5 pt-4 grid grid-cols-2 gap-3">
                       <div>
-                        <span className="text-[8px] uppercase tracking-widest text-white/30 font-bold">Relevance</span>
-                        <div className="text-xs font-semibold text-white">{pct(selectedSession.relevance)}</div>
+                        <span className="text-[8px] uppercase tracking-widest text-white/30 font-bold">
+                          Relevance
+                        </span>
+                        <div className="text-xs font-semibold text-white">
+                          {pct(selectedSession.relevance)}
+                        </div>
                       </div>
                       <div>
-                        <span className="text-[8px] uppercase tracking-widest text-white/30 font-bold">Sentiment</span>
-                        <div className="text-xs font-semibold text-white">{pct(selectedSession.sentiment)}</div>
+                        <span className="text-[8px] uppercase tracking-widest text-white/30 font-bold">
+                          Sentiment
+                        </span>
+                        <div className="text-xs font-semibold text-white">
+                          {pct(selectedSession.sentiment)}
+                        </div>
                       </div>
                     </div>
 
@@ -771,7 +1035,9 @@ function HistoryPage() {
                     <div className="border-t border-white/5 pt-4 flex-1">
                       <div className="flex items-center gap-1.5 mb-2">
                         <Quote className="w-3.5 h-3.5 text-[var(--brand-blue)]" />
-                        <span className="text-[9px] uppercase tracking-widest text-white/40 font-bold">Transcript History</span>
+                        <span className="text-[9px] uppercase tracking-widest text-white/40 font-bold">
+                          Transcript History
+                        </span>
                       </div>
                       <div className="max-h-48 overflow-y-auto pr-1.5 scrollbar-thin text-xs text-white/70 leading-relaxed italic bg-white/[0.015] border border-white/5 p-3 rounded-2xl whitespace-pre-wrap">
                         "{selectedSession.transcription || "No voice transcription detected."}"
@@ -809,7 +1075,6 @@ function HistoryPage() {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );

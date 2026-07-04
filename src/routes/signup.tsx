@@ -24,10 +24,7 @@ export const Route = createFileRoute("/signup")({
 
 const signupSchema = z
   .object({
-    full_name: z
-      .string()
-      .min(1, "Full name is required.")
-      .max(100, "Name is too long."),
+    full_name: z.string().min(1, "Full name is required.").max(100, "Name is too long."),
     email: z.string().email("Please enter a valid email address."),
     password: z
       .string()
@@ -72,7 +69,6 @@ function SignupPage() {
 
   return (
     <div className="relative min-h-[100dvh] pt-20 pb-12 text-foreground flex items-center justify-center overflow-hidden px-4">
-
       {/* ── BACKGROUND ── */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
         <Particles />
@@ -113,7 +109,10 @@ function SignupPage() {
         >
           {/* Header */}
           <div className="mb-10 text-center flex flex-col items-center">
-            <h1 className="text-3xl font-bold text-white tracking-tight mb-3" style={{ fontFamily: "var(--font-serif)" }}>
+            <h1
+              className="text-3xl font-bold text-white tracking-tight mb-3"
+              style={{ fontFamily: "var(--font-serif)" }}
+            >
               Create an account
             </h1>
             <p className="text-sm text-white/50 max-w-[280px] leading-relaxed">
@@ -122,10 +121,12 @@ function SignupPage() {
           </div>
 
           <form id="signup-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-
             {/* Full name */}
             <div className="space-y-2">
-              <label htmlFor="signup-name" className="text-xs font-semibold text-white/60 uppercase tracking-widest">
+              <label
+                htmlFor="signup-name"
+                className="text-xs font-semibold text-white/60 uppercase tracking-widest"
+              >
                 Full Name
               </label>
               <div className="relative">
@@ -144,7 +145,11 @@ function SignupPage() {
                 />
               </div>
               {errors.full_name && (
-                <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="text-xs text-red-400 pl-1">
+                <motion.p
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-xs text-red-400 pl-1"
+                >
                   {errors.full_name.message}
                 </motion.p>
               )}
@@ -152,7 +157,10 @@ function SignupPage() {
 
             {/* Email */}
             <div className="space-y-2">
-              <label htmlFor="signup-email" className="text-xs font-semibold text-white/60 uppercase tracking-widest">
+              <label
+                htmlFor="signup-email"
+                className="text-xs font-semibold text-white/60 uppercase tracking-widest"
+              >
                 Email
               </label>
               <div className="relative">
@@ -171,7 +179,11 @@ function SignupPage() {
                 />
               </div>
               {errors.email && (
-                <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="text-xs text-red-400 pl-1">
+                <motion.p
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-xs text-red-400 pl-1"
+                >
                   {errors.email.message}
                 </motion.p>
               )}
@@ -179,7 +191,10 @@ function SignupPage() {
 
             {/* Password */}
             <div className="space-y-2">
-              <label htmlFor="signup-password" className="text-xs font-semibold text-white/60 uppercase tracking-widest">
+              <label
+                htmlFor="signup-password"
+                className="text-xs font-semibold text-white/60 uppercase tracking-widest"
+              >
                 Password
               </label>
               <div className="relative">
@@ -196,12 +211,21 @@ function SignupPage() {
                       : "border-white/8 focus:border-[var(--brand-blue)]/40"
                   }`}
                 />
-                <button type="button" onClick={() => setShowPassword((p) => !p)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors" aria-label="Toggle password">
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((p) => !p)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+                  aria-label="Toggle password"
+                >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
               {errors.password && (
-                <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="text-xs text-red-400 pl-1">
+                <motion.p
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-xs text-red-400 pl-1"
+                >
                   {errors.password.message}
                 </motion.p>
               )}
@@ -209,7 +233,10 @@ function SignupPage() {
 
             {/* Confirm password */}
             <div className="space-y-2">
-              <label htmlFor="signup-confirm" className="text-xs font-semibold text-white/60 uppercase tracking-widest">
+              <label
+                htmlFor="signup-confirm"
+                className="text-xs font-semibold text-white/60 uppercase tracking-widest"
+              >
                 Confirm Password
               </label>
               <div className="relative">
@@ -226,12 +253,21 @@ function SignupPage() {
                       : "border-white/8 focus:border-[var(--brand-blue)]/40"
                   }`}
                 />
-                <button type="button" onClick={() => setShowConfirm((p) => !p)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors" aria-label="Toggle confirm password">
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm((p) => !p)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+                  aria-label="Toggle confirm password"
+                >
                   {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
               {errors.confirm_password && (
-                <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="text-xs text-red-400 pl-1">
+                <motion.p
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-xs text-red-400 pl-1"
+                >
                   {errors.confirm_password.message}
                 </motion.p>
               )}

@@ -15,7 +15,11 @@ export const Route = createFileRoute("/profile")({
       { name: "description", content: "Manage your user account profile and settings." },
     ],
   }),
-  component: () => <AuthGuard><ProfilePage /></AuthGuard>,
+  component: () => (
+    <AuthGuard>
+      <ProfilePage />
+    </AuthGuard>
+  ),
 });
 
 interface SessionsCountResponse {
@@ -52,7 +56,6 @@ function ProfilePage() {
 
   return (
     <div className="relative min-h-screen text-foreground overflow-x-hidden">
-
       {/* ── BACKGROUND ── */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
         <Particles />
@@ -63,7 +66,6 @@ function ProfilePage() {
       </div>
 
       <div className="relative z-20 px-6 md:px-16 lg:px-28 pt-32 pb-24 max-w-4xl mx-auto space-y-10">
-
         {/* ── HEADER ── */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
@@ -78,7 +80,10 @@ function ProfilePage() {
               User Profile Workspace
             </span>
           </div>
-          <h1 className="text-[36px] md:text-[56px] font-bold tracking-tight text-white leading-none" style={{ fontFamily: "var(--font-serif)" }}>
+          <h1
+            className="text-[36px] md:text-[56px] font-bold tracking-tight text-white leading-none"
+            style={{ fontFamily: "var(--font-serif)" }}
+          >
             Profile Settings.
           </h1>
         </motion.div>
@@ -96,7 +101,9 @@ function ProfilePage() {
               {user?.full_name ? user.full_name.substring(0, 2) : "AI"}
             </div>
             <div className="text-center sm:text-left space-y-1.5">
-              <h2 className="text-2xl font-bold text-white tracking-tight leading-none">{user?.full_name}</h2>
+              <h2 className="text-2xl font-bold text-white tracking-tight leading-none">
+                {user?.full_name}
+              </h2>
               <p className="text-xs text-white/40 flex items-center justify-center sm:justify-start gap-1.5">
                 <ShieldCheck className="w-3.5 h-3.5 text-success" />
                 Verified Candidate Account
@@ -112,9 +119,7 @@ function ProfilePage() {
                 <User className="w-3 h-3 text-white/30" />
                 Full Name
               </span>
-              <div className="text-sm font-semibold text-white/85 pt-1">
-                {user?.full_name}
-              </div>
+              <div className="text-sm font-semibold text-white/85 pt-1">{user?.full_name}</div>
             </div>
 
             {/* Field: Email */}
@@ -123,9 +128,7 @@ function ProfilePage() {
                 <Mail className="w-3 h-3 text-white/30" />
                 Email Address
               </span>
-              <div className="text-sm font-semibold text-white/85 pt-1">
-                {user?.email}
-              </div>
+              <div className="text-sm font-semibold text-white/85 pt-1">{user?.email}</div>
             </div>
 
             {/* Field: Date Joined */}
@@ -149,7 +152,7 @@ function ProfilePage() {
                 {loadingStats ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin text-[var(--brand-blue)] mt-1" />
                 ) : (
-                  sessionCount ?? 0
+                  (sessionCount ?? 0)
                 )}
               </div>
             </div>

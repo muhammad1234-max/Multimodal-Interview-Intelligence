@@ -3,7 +3,7 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 export default defineConfig({
   cloudflare: false,
   tanstackStart: {
-    server: { 
+    server: {
       preset: "vercel",
     },
   },
@@ -23,12 +23,12 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          recharts: ['recharts'],
-          framer: ['framer-motion'],
-          ui: ['lucide-react', 'sonner'],
-          vendor: ['react', 'react-dom', 'zod', 'date-fns']
-        }
-      }
-    }
-  }
+          recharts: ["recharts"],
+          framer: ["framer-motion"],
+          ui: ["lucide-react", "sonner"],
+          vendor: ["react", "react-dom", "zod", "date-fns"],
+        },
+      },
+    },
+  },
 });

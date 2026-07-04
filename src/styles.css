@@ -4,7 +4,7 @@
   /* 
    * NEURALYN DESIGN SYSTEM TOKENS
    */
-   
+
   /* Color Theme */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -37,8 +37,8 @@
   --color-warning: var(--warning);
 
   /* Typography */
-  --font-sans: 'Inter', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
-  --font-serif: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Outfit", ui-sans-serif, system-ui, sans-serif;
 
   /* Border Radius */
   --radius-sm: var(--radius-sm);
@@ -53,10 +53,10 @@
   --shadow-button-glow: 0 0 20px rgba(255, 255, 255, 0.3);
 
   /* Spacing */
-  --spacing-nav-y: 1rem;     /* py-4 */
-  --spacing-nav-x: 2rem;     /* px-8 */
+  --spacing-nav-y: 1rem; /* py-4 */
+  --spacing-nav-x: 2rem; /* px-8 */
   --spacing-section-y: 6rem; /* py-24 */
-  --spacing-hero-top: 4rem;  /* mt-16 */
+  --spacing-hero-top: 4rem; /* mt-16 */
 
   /* Breakpoints */
   --breakpoint-sm: 640px;
@@ -93,21 +93,21 @@
   --card-foreground: oklch(98% 0.005 255);
   --popover: oklch(18% 0.015 255);
   --popover-foreground: oklch(98% 0.005 255);
-  
+
   /* Primary translates to the solid white CTA */
   --primary: oklch(98% 0.005 255);
   --primary-foreground: oklch(14% 0.015 255);
-  
+
   /* Secondary & Muted */
   --secondary: oklch(22% 0.015 255);
   --secondary-foreground: oklch(98% 0.005 255);
   --muted: oklch(22% 0.015 255);
   --muted-foreground: oklch(75% 0.01 255);
-  
+
   /* Accent for UI elements */
   --accent: oklch(25% 0.02 255);
   --accent-foreground: oklch(98% 0.005 255);
-  
+
   /* Utilities */
   --destructive: oklch(65% 0.18 25);
   --destructive-foreground: oklch(98% 0.005 255);
@@ -139,7 +139,8 @@
     border-color: var(--color-border);
   }
 
-  html, body {
+  html,
+  body {
     background-color: var(--background);
     color: var(--foreground);
     font-family: var(--font-sans);
@@ -150,18 +151,20 @@
     min-height: 100vh;
     scroll-behavior: smooth;
   }
-  
+
   ::selection {
     background-color: var(--color-brand-blue);
     color: white;
   }
-  
+
   /* Global Accessibility Focus Ring */
   *:focus-visible {
     outline: 2px solid var(--color-brand-blue);
     outline-offset: 2px;
     box-shadow: 0 0 0 4px rgba(48, 84, 255, 0.2);
-    transition: outline 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+    transition:
+      outline 0.1s ease-in-out,
+      box-shadow 0.1s ease-in-out;
   }
 }
 
@@ -179,16 +182,23 @@
   }
 
   .liquid-glass::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     border-radius: inherit;
     padding: 1.4px;
-    background: linear-gradient(180deg,
-      rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.15) 20%,
-      rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%,
-      rgba(255,255,255,0.15) 80%, rgba(255,255,255,0.45) 100%);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.45) 0%,
+      rgba(255, 255, 255, 0.15) 20%,
+      rgba(255, 255, 255, 0) 40%,
+      rgba(255, 255, 255, 0) 60%,
+      rgba(255, 255, 255, 0.15) 80%,
+      rgba(255, 255, 255, 0.45) 100%
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
@@ -200,7 +210,7 @@
     filter: blur(120px);
     mix-blend-mode: screen;
   }
-  
+
   .ambient-glow-indigo {
     background-color: rgba(49, 46, 129, 0.2); /* indigo-900/20 */
     filter: blur(120px);
@@ -217,20 +227,20 @@
   }
 
   /* Refined Scrollbars */
-  .scrollbar-thin::-webkit-scrollbar { 
-    width: 8px; 
-    height: 8px; 
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
   }
   .scrollbar-thin::-webkit-scrollbar-track {
     background: transparent;
   }
-  .scrollbar-thin::-webkit-scrollbar-thumb { 
-    background: rgba(255, 255, 255, 0.1); 
-    border-radius: 9999px; 
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 9999px;
     border: 2px solid var(--background);
   }
-  .scrollbar-thin::-webkit-scrollbar-thumb:hover { 
-    background: rgba(255, 255, 255, 0.2); 
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
   }
 
   /* Component Microinteractions */
@@ -240,11 +250,16 @@
   .card-hover:hover {
     transform: translateY(-2px);
     border-color: rgba(48, 84, 255, 0.2);
-    box-shadow: 0 10px 40px -10px rgba(48, 84, 255, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+    box-shadow:
+      0 10px 40px -10px rgba(48, 84, 255, 0.1),
+      inset 0 1px 1px rgba(255, 255, 255, 0.05);
   }
-  
+
   .btn-interaction {
-    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease-out, background-color 0.2s ease-out;
+    transition:
+      transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.2s ease-out,
+      background-color 0.2s ease-out;
   }
   .btn-interaction:hover {
     transform: scale(1.02);
@@ -256,29 +271,45 @@
   /* New Hero Glow Utilities */
   .glow-border-cyan {
     border: 1px solid rgba(0, 255, 255, 0.3);
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.2), inset 0 0 10px rgba(0, 255, 255, 0.1);
+    box-shadow:
+      0 0 15px rgba(0, 255, 255, 0.2),
+      inset 0 0 10px rgba(0, 255, 255, 0.1);
   }
-  
+
   .glow-border-blue {
     border: 1px solid rgba(48, 84, 255, 0.4);
-    box-shadow: 0 0 20px rgba(48, 84, 255, 0.3), inset 0 0 15px rgba(48, 84, 255, 0.2);
+    box-shadow:
+      0 0 20px rgba(48, 84, 255, 0.3),
+      inset 0 0 15px rgba(48, 84, 255, 0.2);
   }
 
   .text-glow-cyan {
-    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5), 0 0 20px rgba(0, 255, 255, 0.3);
+    text-shadow:
+      0 0 10px rgba(0, 255, 255, 0.5),
+      0 0 20px rgba(0, 255, 255, 0.3);
   }
 
   .text-glow-white {
     text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
   }
-  
+
   .glow-icon-sphere {
-    background: radial-gradient(circle at center, rgba(48, 84, 255, 0.8) 0%, rgba(48, 84, 255, 0.2) 50%, transparent 70%);
+    background: radial-gradient(
+      circle at center,
+      rgba(48, 84, 255, 0.8) 0%,
+      rgba(48, 84, 255, 0.2) 50%,
+      transparent 70%
+    );
     box-shadow: 0 0 30px rgba(48, 84, 255, 0.6);
   }
-  
+
   .perspective-path {
-    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.8) 50%, transparent 100%);
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.8) 50%,
+      transparent 100%
+    );
     box-shadow: 0 0 15px rgba(48, 84, 255, 0.8);
     transform: perspective(100px) rotateX(60deg);
   }

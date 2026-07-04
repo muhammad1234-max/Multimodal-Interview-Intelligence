@@ -25,7 +25,10 @@ export interface ApiResults {
   final_score?: number;
   audio_features?: AudioFeatures;
   weights_loaded: boolean;
-  model_status?: Record<string, { status: string; reason: string | null; inference_time_ms?: number; version?: string }>;
+  model_status?: Record<
+    string,
+    { status: string; reason: string | null; inference_time_ms?: number; version?: string }
+  >;
   /** MongoDB session ID returned by the server after a successful save */
   session_id?: string | null;
   developer_payload?: any;
